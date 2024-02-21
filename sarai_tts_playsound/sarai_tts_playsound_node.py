@@ -38,13 +38,13 @@ class Audio(Node):
         self.tts_engine = pyttsx3.init()
         self.tts_engine.setProperty('volume', 1.0)
         self.tts_engine.setProperty('rate', 125)
-        self.tts_engine.setProperty('voice', "french")
+        self.tts_engine.setProperty('voice', "english")
 
         # If the voice should sound robotic like
         self.altered_voice = True
 
         # Language to use
-        self.language = 'fr'
+        self.language = 'en'
 
     def speak_callback(self, request, response):
         """
