@@ -1,8 +1,8 @@
-# PixelBot Audio
+# Sarai Text to Speech - Playsound
 
 ## Overview
 
-This package allows PixelBot to speak. 
+This package allows any robot to speak. 
 
 **Keywords:**  human-robot interaction, audio communication, voice synthesis
 

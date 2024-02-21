@@ -2,7 +2,7 @@ import os
 from glob import glob
 from setuptools import setup
 
-package_name = 'pixelbot_audio'
+package_name = 'sarai_tts_playsound'
 
 setup(
     name=package_name,
@@ -23,7 +23,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'pixelbot_audio_node = pixelbot_audio.pixelbot_audio_node:main'
+            'sarai_tts_playsound_node = sarai_tts_playsound.sarai_tts_playsound_node:main'
         ],
     },
 )

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>pixelbot_audio</name>
+  <name>sarai_tts_playsound</name>
   <version>0.0.0</version>
   <description>Package managing the audio capabilities of PixelBot</description>
   <maintainer email="romain.maure@epfl.ch">maure</maintainer>
