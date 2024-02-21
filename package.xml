@@ -3,8 +3,8 @@
 <package format="3">
   <name>sarai_tts_playsound</name>
   <version>0.0.0</version>
-  <description>Package managing the audio capabilities of PixelBot</description>
-  <maintainer email="romain.maure@epfl.ch">maure</maintainer>
+  <description>Package allowing any robot to speak and play sounds</description>
+  <maintainer email="romain.maure@kit.edu">maure</maintainer>
   <license>MIT</license>
 
   <exec_depend>pixelbot_msgs</exec_depend>

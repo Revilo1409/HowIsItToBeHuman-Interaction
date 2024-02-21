@@ -17,8 +17,8 @@ setup(
     install_requires=['setuptools'],
     zip_safe=True,
     maintainer='maure',
-    maintainer_email='romain.maure@epfl.ch',
-    description='Package managing the audio capabilities of PixelBot',
+    maintainer_email='romain.maure@kit.edu',
+    description='Package allowing any robot to speak and play sounds',
     license='MIT',
     tests_require=['pytest'],
     entry_points={
