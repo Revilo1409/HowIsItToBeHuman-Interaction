@@ -17,12 +17,12 @@ from playsound import playsound
 from ament_index_python import get_package_share_directory
 
 
-class Audio(Node):
+class TTS_Playsound(Node):
 
     def __init__(self):
-        super().__init__('pixelbot_audio_node')
+        super().__init__('sarai_tts_playsound_node')
 
-        # Service allowing PixelBot to speak
+        # Service allowing the robot to speak
         self.speak_srv = self.create_service(SetSpeech, 'speak', self.speak_callback)
 
         # Service to specify if the voice should be altered or not
@@ -31,7 +31,7 @@ class Audio(Node):
         # Service allowing to change the language to be spoken
         self.language_srv = self.create_service(SetLanguage, 'change_language', self.change_language_callback)
 
-        # Service allowing PixelBot to play a happy sound
+        # Service allowing the robot to play a happy sound
         self.play_happy_sound_srv = self.create_service(Empty, 'play_happy_sound', self.play_happy_sound_callback)
 
         # Create the pyttsx3 object and perform initial configuration
@@ -48,7 +48,7 @@ class Audio(Node):
 
     def speak_callback(self, request, response):
         """
-        Service handler allowing PixelBot to speak.
+        Service handler allowing the robot to speak.
 
         :param request: See SetSpeech service definition.
         """
@@ -98,7 +98,7 @@ class Audio(Node):
         more robotic like.
 
         :param intputFileName: Name of the audio file containing the voice to
-                                be altered.
+                               be altered.
         """
 
         # Read the audio file
@@ -171,7 +171,7 @@ class Audio(Node):
         :param response: See Empty service definition.
         """
 
-        sound_path = get_package_share_directory('pixelbot_audio') + "/sound/happy.mp3"
+        sound_path = get_package_share_directory('sarai_tts_playsound') + "/sound/happy.mp3"
         playsound(sound_path)
 
         return response
@@ -180,12 +180,12 @@ class Audio(Node):
 def main(args=None):
     rclpy.init(args=args)
 
-    audio_node = Audio()
+    tts_playsound_node = TTS_Playsound()
 
-    rclpy.spin(audio_node)
+    rclpy.spin(tts_playsound_node)
 
-    audio_node.tts_engine.stop()
-    audio_node.destroy_node()
+    tts_playsound_node.tts_engine.stop()
+    tts_playsound_node.destroy_node()
     rclpy.shutdown()
 
 
