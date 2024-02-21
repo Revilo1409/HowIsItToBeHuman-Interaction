@@ -2,7 +2,7 @@
 
 ## Overview
 
-This package contains the custom message and service headers for the PixelBot learning activity, to mediate the communication between its ROS packages. 
+This package contains the custom message and service headers of the PixelBot robot. They mediate the communication between PixelBot's ROS packages. 
 
 ### License
 
