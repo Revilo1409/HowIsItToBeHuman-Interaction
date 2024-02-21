@@ -1,3 +1,4 @@
-string input
+string user_input
 ---
-string response
+string chatgpt_response
+bool success
