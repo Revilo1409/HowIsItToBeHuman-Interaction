@@ -1,93 +1,117 @@
-# pixelbot_motors
+# PixelBot Motors
 
+## Overview
 
+This package allows to control the motors of PixelBot. 
 
-## Getting started
+**Keywords:** motors, gestures
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+### License
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+[![License: GPL-3.0](https://img.shields.io/badge/license-GPLv3-blue)](https://www.gnu.org/licenses/gpl-3.0.en.html)
 
-## Add your files
+The whole package is under GPL-3.0 License, see [LICENSE](https://github.com/RomainMaure/PixelBot/blob/main/LICENSE).
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+**Author: Romain Maure<br />
+Affiliation: [CHILI Lab, EPFL](https://www.epfl.ch/labs/chili/)<br />
+Maintainer: Romain Maure, romain.maure21@gmail.com**
 
-```
-cd existing_repo
-git remote add origin https://gitlab.kit.edu/kit/iar/sarai/software/ros2/pixelbot/pixelbot_motors.git
-git branch -M main
-git push -uf origin main
-```
-
-## Integrate with your tools
-
-- [ ] [Set up project integrations](https://gitlab.kit.edu/kit/iar/sarai/software/ros2/pixelbot/pixelbot_motors/-/settings/integrations)
-
-## Collaborate with your team
-
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
-
-## Test and Deploy
-
-Use the built-in continuous integration in GitLab.
-
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
-
-***
-
-# Editing this README
-
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
-
-## Suggestions for a good README
-
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
-
-## Name
-Choose a self-explaining name for your project.
-
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
-
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
-
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+The [pixelbot_motors](https://github.com/RomainMaure/PixelBot/tree/main/src/pixelbot_motors) package has been tested under [ROS2 Humble](https://docs.ros.org/en/humble/index.html) on Ubuntu 22.04.
+This is research code, expect that it changes often and any fitness for a particular purpose is disclaimed.
 
 ## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+
+### Building from Source
+
+#### Dependencies
+
+- [Robot Operating System (ROS2)](https://docs.ros.org/en/humble/index.html) (middleware for robotics).
+- [pixelbot_msgs](https://github.com/RomainMaure/PixelBot/tree/main/src/pixelbot_msgs) for the custom ROS2 headers.
+- [adafruit_servokit](https://pypi.org/project/adafruit-circuitpython-servokit/) to control multiple servo motors through a PCA9865.
+    ```
+	sudo pip3 install adafruit-circuitpython-servokit
+    ```
+
+#### Building
+
+1) Copy this package in your ROS2 workspace (e.g. `~/ros2_ws/src`).
+
+2) Build the package with colcon:
+    ```
+    cd ~/ros2_ws
+    colcon build --packages-select pixelbot_motors
+    ```
 
 ## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+You can run the main node with:
+```
+ros2 run pixelbot_motors pixelbot_motors_node
+```
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+## Nodes
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+### pixelbot_motors_node
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+Allows to control the motors of PixelBot.
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+#### Services
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+* **`motors_movement`** ([pixelbot_msgs/MotorsMovement](https://github.com/RomainMaure/PixelBot/blob/main/src/pixelbot_msgs/srv/MotorsMovement.srv))
 
-## License
-For open source projects, say how it is licensed.
+	Move the motors of your choice to a given angle. For example:
+    ```
+    # Move the right arm motor to an angle position of 180 degrees
+	ros2 service call /motors_movement pixelbot_msgs/MotorsMovement "body_parts: ['right_arm']
+    angles: [180]"
+    ```
+    ```
+    # Move quickly all the motors to a given angle position
+	ros2 service call /motors_movement pixelbot_msgs/MotorsMovement "body_parts: ['right_arm', 'left_arm', 'right_antenna', 'left_antenna']
+    angles: [180, 0, 90, 135]
+    ```
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+* **`walking_movement`** ([std_srvs/Empty](http://docs.ros.org/en/noetic/api/std_srvs/html/srv/Empty.html))
+
+	Perform a walking gesture with the arms. For example:
+    ```
+	ros2 service call /walking_movement std_srvs/srv/Empty 
+    ```
+
+* **`hand_waving`** ([std_srvs/Empty](http://docs.ros.org/en/noetic/api/std_srvs/html/srv/Empty.html))
+
+	Perform a hand waving gesture with the right arm. For example:
+    ```
+	ros2 service call /hand_waving std_srvs/srv/Empty 
+    ```
+
+* **`emotion_antennae_movement`** ([pixelbot_msgs/DisplayEmotion](https://github.com/RomainMaure/PixelBot/blob/main/src/pixelbot_msgs/srv/DisplayEmotion.srv))
+
+	Perform antennae movements to show emotions. For example:
+    ```
+	ros2 service call /emotion_antennae_movement pixelbot_msgs/DisplayEmotion "desired_emotion: 'happy'"
+    ```
+
+    Available emotions: "happy", "angry", "sad", "surprise".
+
+## Troubleshooting
+
+- **i2c permission error**:
+    ```
+    PermissionError: [Errno 13] Permission denied: '/dev/i2c-1'
+    ```
+
+    A quick fix is to run in a terminal:
+    ```
+    sudo chmod a+rw /dev/i2c-1
+    ```
+
+    However this is temporary and will be lost at next boot. To fix it permanently, you can run this command in a terminal and then reboot:
+    ```
+    sudo adduser $USER dialout
+    ```
+
+
+## Bugs & Feature Requests
+
+Please report bugs and request features using the [Issue Tracker](https://github.com/RomainMaure/PixelBot/issues).
