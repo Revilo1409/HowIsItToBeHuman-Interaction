@@ -71,7 +71,7 @@ Allows any robot to speak.
 
 	Make the robot speak:
     ```
-	ros2 service call /speak sarai_msgs/SetSpeech "message: 'Hi, I'm a robot.'"
+	ros2 service call /speak sarai_msgs/SetSpeech "message: 'Hi, I am a robot.'"
     ```
 
 * **`change_voice_alteration`** ([sarai_msgs/SetVoiceAlteration](https://gitlab.kit.edu/kit/iar/sarai/software/ros2/sarai-standalone/sarai_msgs/-/blob/main/srv/SetVoiceAlteration.srv?ref_type=heads))
