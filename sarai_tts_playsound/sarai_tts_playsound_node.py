@@ -3,9 +3,9 @@ from rclpy.node import Node
 
 from std_srvs.srv import Empty
 
-from pixelbot_msgs.srv import SetVoiceAlteration
-from pixelbot_msgs.srv import SetSpeech
-from pixelbot_msgs.srv import SetLanguage
+from sarai_msgs.srv import SetVoiceAlteration
+from sarai_msgs.srv import SetSpeech
+from sarai_msgs.srv import SetLanguage
 
 import pyttsx3
 import numpy as np

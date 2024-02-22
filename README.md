@@ -26,7 +26,7 @@ This is research code, expect that it changes often and any fitness for a partic
 #### Dependencies
 
 - [Robot Operating System (ROS2)](https://docs.ros.org/en/humble/index.html) (middleware for robotics).
-- [pixelbot_msgs](https://github.com/RomainMaure/PixelBot/tree/main/src/pixelbot_msgs) for the custom ROS2 headers.
+- [sarai_msgs](https://github.com/RomainMaure/PixelBot/tree/main/src/pixelbot_msgs) for the custom ROS2 headers.
 - [Pyttsx3](https://pypi.org/project/pyttsx3/) and [gTTS](https://pypi.org/project/gTTS/): two text to speech libraries for Python.
     ```
 	sudo pip3 install pyttsx3
@@ -67,35 +67,35 @@ Allows PixelBot to speak.
 
 #### Services
 
-* **`speak`** ([pixelbot_msgs/SetSpeech](https://github.com/RomainMaure/PixelBot/blob/main/src/pixelbot_msgs/srv/SetSpeech.srv))
+* **`speak`** ([sarai_msgs/SetSpeech](https://github.com/RomainMaure/PixelBot/blob/main/src/pixelbot_msgs/srv/SetSpeech.srv))
 
 	Make PixelBot speak:
     ```
-	ros2 service call /speak pixelbot_msgs/SetSpeech "message: 'Bonjour, je suis PixelBot.'"
+	ros2 service call /speak sarai_msgs/SetSpeech "message: 'Bonjour, je suis PixelBot.'"
     ```
 
-* **`change_voice_alteration`** ([pixelbot_msgs/SetVoiceAlteration](https://github.com/RomainMaure/PixelBot/blob/main/src/pixelbot_msgs/srv/SetVoiceAlteration.srv))
+* **`change_voice_alteration`** ([sarai_msgs/SetVoiceAlteration](https://github.com/RomainMaure/PixelBot/blob/main/src/pixelbot_msgs/srv/SetVoiceAlteration.srv))
 
 	Allows to enable or disable voice alteration (robotic like voice):
     ```
     # Enable voice alteration
-	ros2 service call /change_voice_alteration pixelbot_msgs/SetVoiceAlteration "is_voice_altered: true"
+	ros2 service call /change_voice_alteration sarai_msgs/SetVoiceAlteration "is_voice_altered: true"
     ```
     ```
     # Disable voice alteration
-	ros2 service call /change_voice_alteration pixelbot_msgs/SetVoiceAlteration "is_voice_altered: false"
+	ros2 service call /change_voice_alteration sarai_msgs/SetVoiceAlteration "is_voice_altered: false"
     ```
 
-* **`change_language`** ([pixelbot_msgs/SetLanguage](https://github.com/RomainMaure/PixelBot/blob/main/src/pixelbot_msgs/srv/SetLanguage.srv))
+* **`change_language`** ([sarai_msgs/SetLanguage](https://github.com/RomainMaure/PixelBot/blob/main/src/pixelbot_msgs/srv/SetLanguage.srv))
 
 	Allows to specify the language to be spoken (french or english):
     ```
     # Change to english
-	ros2 service call /change_language pixelbot_msgs/SetLanguage "language: 'english'"
+	ros2 service call /change_language sarai_msgs/SetLanguage "language: 'english'"
     ```
     ```
     # Change to french
-	ros2 service call /change_language pixelbot_msgs/SetLanguage "language: 'french'"
+	ros2 service call /change_language sarai_msgs/SetLanguage "language: 'french'"
     ```
 
 * **`play_happy_sound`** ([std_srvs/Empty](http://docs.ros.org/en/noetic/api/std_srvs/html/srv/Empty.html))
