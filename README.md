@@ -15,7 +15,7 @@ This package allows to send messages to ChatGPT via the Python API.
 #### Dependencies
 
 - [Robot Operating System (ROS2)](https://docs.ros.org/en/humble/index.html) (middleware for robotics).
-- [sarai_msgs](LINK) for the custom ROS2 headers.
+- [sarai_msgs](https://gitlab.kit.edu/kit/iar/sarai/software/ros2/sarai-standalone/sarai_msgs) for the custom ROS2 headers.
 
 #### Building
 
@@ -42,7 +42,7 @@ Allows to send messages to ChatGPT.
 
 **** Services
 
-* **'gpt_request'** ([sarai_msgs/GPTRequest](LINK))
+* **'gpt_request'** ([sarai_msgs/GPTRequest](https://gitlab.kit.edu/kit/iar/sarai/software/ros2/sarai-standalone/sarai_msgs/-/blob/main/srv/GPTRequest.srv))
         Sends a request to ChatGPT. For example:
     '''
         ros2 service call /gpt_request sarai_msgs/GPTRequest "user_input: 'How are you GPT?'"
