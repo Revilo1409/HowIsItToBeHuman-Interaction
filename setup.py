@@ -20,6 +20,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
+            'how_is_it_to_be_human_interaction_node = how_is_it_to_be_human_interaction.how_is_it_to_be_human_interaction_node:main' 
         ],
     },
 )
