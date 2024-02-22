@@ -39,12 +39,9 @@ class GPTRequester(Node):
         role_message = {"role": "system", "content": self.get_parameter('role').get_parameter_value().string_value}
         maxWindow_messages = self.get_parameter('maxWindow_messages').get_parameter_value().integer_value
         self.MESSAGE_HISTORY.append({"role": "user", "content" : user_input})
-        print(type(self.MESSAGE_HISTORY))
         if len(self.MESSAGE_HISTORY) > maxWindow_messages + 1: 
-            print([role_message]+(self.MESSAGE_HISTORY[-(maxWindow_messages + 1):]))
             return [role_message]+(self.MESSAGE_HISTORY[-(maxWindow_messages + 1):])
         else:
-            print([role_message]+(self.MESSAGE_HISTORY))
             return [role_message]+(self.MESSAGE_HISTORY)
 
 def main(args=None):
