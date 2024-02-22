@@ -13,10 +13,10 @@ This package allows any robot to speak.
 The whole package is under GPL-3.0 License, see [LICENSE](https://github.com/RomainMaure/PixelBot/blob/main/LICENSE).
 
 **Author: Romain Maure<br />
-Affiliation: [CHILI Lab, EPFL](https://www.epfl.ch/labs/chili/)<br />
-Maintainer: Romain Maure, romain.maure21@gmail.com**
+Affiliation: [SARAI Lab, KIT](https://sarai.iar.kit.edu/)<br />
+Maintainer: Romain Maure, romain.maure@kit.edu**
 
-The [pixelbot_audio](https://github.com/RomainMaure/PixelBot/tree/main/src/pixelbot_audio) package has been tested under [ROS2 Humble](https://docs.ros.org/en/humble/index.html) on Ubuntu 22.04.
+The [sarai_tts_playsound](https://gitlab.kit.edu/kit/iar/sarai/software/ros2/sarai-standalone/sarai_tts_playsound) package has been tested under [ROS2 Humble](https://docs.ros.org/en/humble/index.html) on Ubuntu 22.04.
 This is research code, expect that it changes often and any fitness for a particular purpose is disclaimed.
 
 ## Installation
@@ -26,7 +26,7 @@ This is research code, expect that it changes often and any fitness for a partic
 #### Dependencies
 
 - [Robot Operating System (ROS2)](https://docs.ros.org/en/humble/index.html) (middleware for robotics).
-- [sarai_msgs](https://github.com/RomainMaure/PixelBot/tree/main/src/pixelbot_msgs) for the custom ROS2 headers.
+- [sarai_msgs](https://gitlab.kit.edu/kit/iar/sarai/software/ros2/sarai-standalone/sarai_msgs) for the custom ROS2 headers.
 - [Pyttsx3](https://pypi.org/project/pyttsx3/) and [gTTS](https://pypi.org/project/gTTS/): two text to speech libraries for Python.
     ```
 	sudo pip3 install pyttsx3
@@ -49,32 +49,32 @@ This is research code, expect that it changes often and any fitness for a partic
 2) Build the package with colcon:
     ```
     cd ~/ros2_ws
-    colcon build --packages-select pixelbot_audio
+    colcon build --packages-select sarai_tts_playsound
     ```
 
 ## Usage
 
 You can run the main node with:
 ```
-ros2 run pixelbot_audio pixelbot_audio_node
+ros2 run sarai_tts_playsound sarai_tts_playsound_node
 ```
 
 ## Nodes
 
-### pixelbot_audio_node
+### sarai_tts_playsound_node
 
-Allows PixelBot to speak.
+Allows any robot to speak.
 
 #### Services
 
-* **`speak`** ([sarai_msgs/SetSpeech](https://github.com/RomainMaure/PixelBot/blob/main/src/pixelbot_msgs/srv/SetSpeech.srv))
+* **`speak`** ([sarai_msgs/SetSpeech](https://gitlab.kit.edu/kit/iar/sarai/software/ros2/sarai-standalone/sarai_msgs/-/blob/main/srv/SetSpeech.srv?ref_type=heads))
 
-	Make PixelBot speak:
+	Make the robot speak:
     ```
-	ros2 service call /speak sarai_msgs/SetSpeech "message: 'Bonjour, je suis PixelBot.'"
+	ros2 service call /speak sarai_msgs/SetSpeech "message: 'Hi, I'm a robot.'"
     ```
 
-* **`change_voice_alteration`** ([sarai_msgs/SetVoiceAlteration](https://github.com/RomainMaure/PixelBot/blob/main/src/pixelbot_msgs/srv/SetVoiceAlteration.srv))
+* **`change_voice_alteration`** ([sarai_msgs/SetVoiceAlteration](https://gitlab.kit.edu/kit/iar/sarai/software/ros2/sarai-standalone/sarai_msgs/-/blob/main/srv/SetVoiceAlteration.srv?ref_type=heads))
 
 	Allows to enable or disable voice alteration (robotic like voice):
     ```
@@ -86,7 +86,7 @@ Allows PixelBot to speak.
 	ros2 service call /change_voice_alteration sarai_msgs/SetVoiceAlteration "is_voice_altered: false"
     ```
 
-* **`change_language`** ([sarai_msgs/SetLanguage](https://github.com/RomainMaure/PixelBot/blob/main/src/pixelbot_msgs/srv/SetLanguage.srv))
+* **`change_language`** ([sarai_msgs/SetLanguage](https://gitlab.kit.edu/kit/iar/sarai/software/ros2/sarai-standalone/sarai_msgs/-/blob/main/srv/SetLanguage.srv?ref_type=heads))
 
 	Allows to specify the language to be spoken (french or english):
     ```
@@ -111,4 +111,4 @@ Allows PixelBot to speak.
 
 ## Bugs & Feature Requests
 
-Please report bugs and request features using the [Issue Tracker](https://github.com/RomainMaure/PixelBot/issues).
+Please report bugs and request features using the [Issue Tracker](https://gitlab.kit.edu/kit/iar/sarai/software/ros2/sarai-standalone/sarai_msgs/-/issues).
