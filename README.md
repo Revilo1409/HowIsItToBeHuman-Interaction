@@ -44,7 +44,7 @@ Allows to send messages to ChatGPT.
 
 * **'gpt_request'** ([sarai_msgs/GPTRequest](https://gitlab.kit.edu/kit/iar/sarai/software/ros2/sarai-standalone/sarai_msgs/-/blob/main/srv/GPTRequest.srv))
         Sends a request to ChatGPT. For example:
-    '''
+    ```
         ros2 service call /gpt_request sarai_msgs/GPTRequest "user_input: 'How are you GPT?'"
-    '''
+    ```
 
