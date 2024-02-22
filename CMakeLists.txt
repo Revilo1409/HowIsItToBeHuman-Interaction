@@ -15,6 +15,9 @@ find_package(rosidl_default_generators REQUIRED)
 
 rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/GPTRequest.srv"
+  "srv/SetLanguage.srv"
+  "srv/SetSpeech.srv"
+  "srv/SetVoiceAlteration.srv"
 )
 
 if(BUILD_TESTING)
