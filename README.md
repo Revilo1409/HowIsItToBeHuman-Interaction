@@ -40,7 +40,7 @@ ros2 run sarai_chatgpt gpt_requester_node
 
 Allows to send messages to ChatGPT.
 
-**** Services
+#### Services
 
 * **'gpt_request'** ([sarai_msgs/GPTRequest](https://gitlab.kit.edu/kit/iar/sarai/software/ros2/sarai-standalone/sarai_msgs/-/blob/main/srv/GPTRequest.srv))
         Sends a request to ChatGPT. For example:
