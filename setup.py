@@ -20,7 +20,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'talker = sarai_chatgpt.publisher_member_function:main',
+            'gpt_requester_node = sarai_chatgpt.gpt_requester_node:main',
         ],
     },
 )

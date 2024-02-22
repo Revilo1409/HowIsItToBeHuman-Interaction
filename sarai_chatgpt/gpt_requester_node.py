@@ -15,37 +15,37 @@ import time
 
 class GPTRequester(Node):
     MODEL = "gpt-3.5-turbo-1106"
-    API_KEY=""
     MESSAGE_HISTORY = []
 
     def __init__(self):
-        self.gpt_request_srv = self.create_service(GPTRequest, 'gpt_request',
-                                                   self.gpt_request_callback) 
+        super().__init__('gptrequester')
+        self.gpt_request_srv = self.create_service(GPTRequest, 'gpt_request', self.gpt_request_callback) 
         role_descriptor = ParameterDescriptor(description = """This is a 
                             parameter for setting the role of ChatGPT""") 
-        maxWindow_messages_descriptor = ParameterDescriptor(description = "Max number of messages stored in the message history")                                       
-        self.declare_parameters([('role', '', role_descriptor),
-                                 ('maxWindow_messages', 100, 
-                                  maxWindow_messages_descriptor)])
-        self.client = OpenAI(api_key = self.API_KEY)
+        maxWindow_messages_descriptor = ParameterDescriptor(description = "Max number of messages stored in the message history") 
+        api_key_descriptor = ParameterDescriptor(description= "API Key for ChatGPT API")                                      
+        self.declare_parameter('role', '', role_descriptor)
+        self.declare_parameter('maxWindow_messages', 100, maxWindow_messages_descriptor)
+        self.api_key = sys.argv[1]                               
+        self.client = OpenAI(api_key = self.api_key)
 
     def gpt_request_callback(self, request, response):
-        
-        chat = self.client.chat.completions.create(
-            model=self.MODEL, messages= self.get_maxWindow_messages(), 
-            temperature=0.7
-        )
-        response.chatgpt_response = ""
+        chat = self.client.chat.completions.create(model=self.MODEL, messages= self.get_maxWindow_messages(request.user_input),temperature=0.7)
+        response.chatgpt_response = chat.choices[0].message.content
         response.success = True
         return response  
         
-    def get_maxWindow_messages(self):
+    def get_maxWindow_messages(self, user_input):
         role_message = {"role": "system", "content": self.get_parameter('role').get_parameter_value().string_value}
         maxWindow_messages = self.get_parameter('maxWindow_messages').get_parameter_value().integer_value
-        if len(self.MESSAGE_HISTORY) > maxWindow_messages:
-            return role_message.append(self.MESSAGE_HISTORY[-maxWindow_messages:])
+        self.MESSAGE_HISTORY.append({"role": "user", "content" : user_input})
+        print(type(self.MESSAGE_HISTORY))
+        if len(self.MESSAGE_HISTORY) > maxWindow_messages + 1: 
+            print([role_message]+(self.MESSAGE_HISTORY[-(maxWindow_messages + 1):]))
+            return [role_message]+(self.MESSAGE_HISTORY[-(maxWindow_messages + 1):])
         else:
-            return role_message.append(self.MESSAGE_HISTORY)
+            print([role_message]+(self.MESSAGE_HISTORY))
+            return [role_message]+(self.MESSAGE_HISTORY)
 
 def main(args=None):
     rclpy.init(args=args)
