@@ -43,8 +43,18 @@ Allows to send messages to ChatGPT.
 #### Services
 
 * **`gpt_request`** ([sarai_msgs/GPTRequest](https://gitlab.kit.edu/kit/iar/sarai/software/ros2/sarai-standalone/sarai_msgs/-/blob/main/srv/GPTRequest.srv))
+        
         Sends a request to ChatGPT. For example:
     ```
         ros2 service call /gpt_request sarai_msgs/GPTRequest "user_input: 'How are you GPT?'"
     ```
 
+#### Parameters
+
+* **`role`** (string, default: '')
+
+    The role given to ChatGPT by the user
+
+* **`maxWindow_messages`** (int, default: 100)
+
+    The maximum number of messages from the message history, that should be sent in the request
