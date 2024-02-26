@@ -9,6 +9,7 @@ class Sarai_Speech_Recognition(Node):
     def __init__(self):
         super().__init__('sarai_speech_recognition_node')
 
+        # Service to perform speech recognition
         self.recognize_speech_srv = self.create_service(RecognizeSpeech, 'recognize_speech', self.recognize_speech_callback)
 
         self.r = sr.Recognizer()
@@ -18,10 +19,12 @@ class Sarai_Speech_Recognition(Node):
             self.audio = self.r.listen(source)
 
     def recognize_speech_callback(self, request, response):
+        """
+        Service handler performing the speech recognition
+        :param request: See RecognizeSpeech service definition.
+        :param response: See RecognizeSpeech service definition.
+        """
         try:
-    # for testing purposes, we're just using the default API key
-    # to use another API key, use `r.recognize_google(audio, key="GOOGLE_SPEECH_RECOGNITION_API_KEY")`
-    # instead of `r.recognize_google(audio)`
             response.recognized_speech = self.r.recognize_google(self.audio)
             response.success = True
             return response
