@@ -33,5 +33,9 @@ def generate_launch_description():
         Node(
             package='how_is_it_to_be_human_interaction',
             executable='how_is_it_to_be_human_interaction_node',
+        ),
+        Node(
+            package='sarai_speech_recognition',
+            executable= 'sarai_speech_recognition_node'
         )
     ])
