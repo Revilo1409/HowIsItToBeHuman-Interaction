@@ -39,8 +39,7 @@ def main(args=None):
 
     speech_recognition_node = Sarai_Speech_Recognition()
     
-    while True:
-        speech_recognition_node.recognize_speech_callback()
+    rclpy.spin(speech_recognition_node)
     speech_recognition_node.destroy_node()
     rclpy.shutdown()
 
