@@ -30,7 +30,7 @@ class Interaction(Node):
 
         self.future = self.gpt_request_cli.call_async(request)
         rclpy.spin_until_future_complete(self, self.future)
-        
+
         return self.future.result()
     
     def send_speak_request(self, message):
@@ -39,12 +39,9 @@ class Interaction(Node):
         :param message: String to specify the text to be spoken.
         """
         request = SetSpeech.Request()
-
-        print(f"typ: {type(message)}")
         request.message = message
 
         self.future = self.speak_cli.call_async(request)
-
         rclpy.spin_until_future_complete(self, self.future)
 
         return self.future.result()
@@ -54,8 +51,10 @@ class Interaction(Node):
         Send a request to the recognize_speech service server.
         """
         request = RecognizeSpeech.Request()
+
         self.future = self.recognize_speech_cli.call_async(request)
         rclpy.spin_until_future_complete(self, self.future)
+        
         return self.future.result()
     
     def interaction(self):
