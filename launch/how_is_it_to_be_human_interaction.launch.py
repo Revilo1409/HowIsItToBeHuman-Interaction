@@ -3,7 +3,6 @@ from launch.actions import DeclareLaunchArgument
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
 from launch.substitutions import TextSubstitution
-import sys
 
 def generate_launch_description():
     api_key_launch_arg= DeclareLaunchArgument('api_key', default_value=TextSubstitution(text='None'))
