@@ -18,7 +18,7 @@ setup(
     zip_safe=True,
     maintainer='oliver-aberle',
     maintainer_email='Oliver.Aberle@student.kit.edu',
-    description='TODO: Package description',
+    description='Package taking care of the main interaction of my thesis',
     license='Apache-2.0',
     tests_require=['pytest'],
     entry_points={
