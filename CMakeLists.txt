@@ -18,6 +18,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/SetLanguage.srv"
   "srv/SetSpeech.srv"
   "srv/SetVoiceAlteration.srv"
+  "srv/RecognizeSpeech.srv"
 )
 
 if(BUILD_TESTING)
