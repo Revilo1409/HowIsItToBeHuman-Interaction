@@ -6,8 +6,7 @@ from launch.substitutions import TextSubstitution
 
 def generate_launch_description():
     api_key_launch_arg= DeclareLaunchArgument('api_key', default_value=TextSubstitution(text='None'))
-    return LaunchDescription(
-        [
+    return LaunchDescription([
         api_key_launch_arg,
         Node(
             package='sarai_chatgpt',
