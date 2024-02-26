@@ -44,14 +44,19 @@ class Interaction(Node):
     def interaction(self):
         while True:
             try:
-                message = input("User: ")
+                response = self.send_recognize_speech_request()
+                message = response.recognized_speech
+                success = response.success
             except KeyboardInterrupt:
                 break
-            if message:
-                response = self.send_gpt_request(message)
-                self.send_speak_request(response.chatgpt_response)
-                print(f"GPT: {response.chatgpt_response}")
-
+            if success:
+                print(message)
+                gpt_response = self.send_gpt_request(message)
+                print(f"GPT: {gpt_response.chatgpt_response}")
+                self.send_speak_request(gpt_response.chatgpt_response)
+            else:
+                self.send_speak_request("message")
+                print("Message finished.")
         print("\nClosing GPTClient...")
 
 def main():
