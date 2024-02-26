@@ -6,10 +6,8 @@ from launch.substitutions import TextSubstitution
 import sys
 
 def generate_launch_description():
-    api_key_launch_arg= DeclareLaunchArgument('api_key', default_value=TextSubstitution(text='None'))
     return LaunchDescription(
         [
-        api_key_launch_arg,
         Node(
             package='sarai_chatgpt',
             executable='gpt_requester_node',
@@ -22,8 +20,7 @@ def generate_launch_description():
                  You have some fundamental philosophical knowledge. Your 
                  responses have a maximum length of ca. 40 words.'''},
                 {'maxWindow_messages': 4},         
-            ],
-            arguments= [LaunchConfiguration('api_key')]
+            ]
         ),
         Node(
             package='sarai_tts_playsound',
