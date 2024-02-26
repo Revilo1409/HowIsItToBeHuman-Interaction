@@ -27,8 +27,10 @@ class Interaction(Node):
         """
         request = GPTRequest.Request()
         request.user_input = user_input
+
         self.future = self.gpt_request_cli.call_async(request)
         rclpy.spin_until_future_complete(self, self.future)
+        
         return self.future.result()
     
     def send_speak_request(self, message):
@@ -60,7 +62,7 @@ class Interaction(Node):
         """
         Main interaction.
         """
-        
+
         while True:
             try:
                 message = input("User: ")
