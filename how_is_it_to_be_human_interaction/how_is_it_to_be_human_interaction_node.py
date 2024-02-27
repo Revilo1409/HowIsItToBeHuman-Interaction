@@ -17,7 +17,7 @@ class Interaction(Node):
         self.speak_cli = self.create_client(SetSpeech, "speak")
 
         self.recognize_speech_cli = self.create_client(
-            RecognizeSpeech, "recognize_speech"Das hat der PC verstanden
+            RecognizeSpeech, "recognize_speech"
         )
 
         while not self.gpt_request_cli.wait_for_service(timeout_sec=1.0):
