@@ -3,26 +3,43 @@ from rclpy.node import Node
 
 from sarai_msgs.srv import SetSpeech, GPTRequest, RecognizeSpeech
 
+
 class Interaction(Node):
     def __init__(self):
-        super().__init__('interaction_node')
+        super().__init__("how_is_it_to_be_human_interaction_node")
 
-        self.gpt_request_cli = self.create_client(GPTRequest, 'gpt_request')
+        self.gpt_request_cli = self.create_client(GPTRequest, "gpt_request")
 
-        self.speak_cli = self.create_client(SetSpeech, 'speak')
+        self.start_conversation_cli = self.create_client(
+            GPTRequest, "start_conversation"
+        )
 
-        self.recognize_speech_cli = self.create_client(RecognizeSpeech, 'recognize_speech')
+        self.speak_cli = self.create_client(SetSpeech, "speak")
+
+        self.recognize_speech_cli = self.create_client(
+            RecognizeSpeech, "recognize_speech"Das hat der PC verstanden
+        )
 
         while not self.gpt_request_cli.wait_for_service(timeout_sec=1.0):
-            self.get_logger().info(f'{self.gpt_request_cli.srv_name} service not available, waiting again...')
-    
+            self.get_logger().info(
+                f"{self.gpt_request_cli.srv_name} service not available, waiting again..."
+            )
+
     def send_gpt_request(self, user_input):
         request = GPTRequest.Request()
         request.user_input = user_input
         self.future = self.gpt_request_cli.call_async(request)
         rclpy.spin_until_future_complete(self, self.future)
         return self.future.result()
-    
+
+    def send_start_conversation_request(self):
+        request = GPTRequest.Request()
+
+        self.future = self.start_conversation_cli.call_async(request)
+        rclpy.spin_until_future_complete(self, self.future)
+
+        return self.future.result()
+
     def send_speak_request(self, gpt_response):
         request = SetSpeech.Request()
 
@@ -34,14 +51,17 @@ class Interaction(Node):
         rclpy.spin_until_future_complete(self, self.future)
 
         return self.future.result()
-    
+
     def send_recognize_speech_request(self):
         request = RecognizeSpeech.Request()
         self.future = self.recognize_speech_cli.call_async(request)
         rclpy.spin_until_future_complete(self, self.future)
         return self.future.result()
-    
+
     def interaction(self):
+        print("HELLO THERE")
+        gpt_response = self.send_start_conversation_request()
+        self.send_speak_request(gpt_response.chatgpt_response)
         while True:
             try:
                 response = self.send_recognize_speech_request()
@@ -50,14 +70,17 @@ class Interaction(Node):
             except KeyboardInterrupt:
                 break
             if success:
-                print(message)
+                print(f"The PC understood this:{message}")
                 gpt_response = self.send_gpt_request(message)
                 print(f"GPT: {gpt_response.chatgpt_response}")
                 self.send_speak_request(gpt_response.chatgpt_response)
             else:
-                self.send_speak_request("message")
+                self.send_speak_request(
+                    "Sorry, I did not understand you. Can you please repeadt what you said?"
+                )
                 print("Message finished.")
         print("\nClosing GPTClient...")
+
 
 def main():
     rclpy.init()
@@ -69,5 +92,6 @@ def main():
     interaction_node.destroy_node()
     rclpy.shutdown()
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()
