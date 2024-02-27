@@ -17,6 +17,10 @@ class Sarai_Speech_Recognition(Node):
         )
 
         self.r = sr.Recognizer()
+        with sr.Microphone() as source:
+            self.r.adjust_for_ambient_noise(
+                source
+            )  # listen for 1 second to calibrate the energy threshold for ambient noise levels
 
     def recognize_speech_callback(self, request, response):
         """
@@ -27,12 +31,9 @@ class Sarai_Speech_Recognition(Node):
         # Setting up microphone for Speech Recognition
 
         with sr.Microphone() as source:
-            self.r.adjust_for_ambient_noise(
-                source
-            )  # listen for 1 second to calibrate the energy threshold for ambient noise levels
             print("Say something!")
             self.audio = self.r.listen(source, None)
-
+            print("Said something")
         try:
             response.recognized_speech = self.r.recognize_google(self.audio)
             response.success = True
@@ -58,6 +59,14 @@ def main(args=None):
 
     speech_recognition_node.destroy_node()
     rclpy.shutdown()
+
+
+"""
+    nodee = Sarai_Speech_Recognition()
+    request = RecognizeSpeech.Request
+    response = RecognizeSpeech.Response
+    while True:
+        nodee.recognize_speech_callback(request, response)"""
 
 
 if __name__ == "__main__":
