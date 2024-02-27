@@ -5,16 +5,23 @@ from sarai_msgs.srv import RecognizeSpeech
 
 import speech_recognition as sr
 
+
 class Sarai_Speech_Recognition(Node):
+
     def __init__(self):
-        super().__init__('sarai_speech_recognition_node')
+        super().__init__("sarai_speech_recognition_node")
 
         # Service to perform speech recognition
-        self.recognize_speech_srv = self.create_service(RecognizeSpeech, 'recognize_speech', self.recognize_speech_callback)
+        self.recognize_speech_srv = self.create_service(
+            RecognizeSpeech, "recognize_speech", self.recognize_speech_callback
+        )
 
+        # Setting up microphone for Speech Recognition
         self.r = sr.Recognizer()
         with sr.Microphone() as source:
-            self.r.adjust_for_ambient_noise(source)  # listen for 1 second to calibrate the energy threshold for ambient noise levels
+            self.r.adjust_for_ambient_noise(
+                source
+            )  # listen for 1 second to calibrate the energy threshold for ambient noise levels
             print("Say something!")
             self.audio = self.r.listen(source)
 
@@ -24,6 +31,7 @@ class Sarai_Speech_Recognition(Node):
         :param request: See RecognizeSpeech service definition.
         :param response: See RecognizeSpeech service definition.
         """
+
         try:
             response.recognized_speech = self.r.recognize_google(self.audio)
             response.success = True
@@ -33,18 +41,23 @@ class Sarai_Speech_Recognition(Node):
             response.success = False
             return response
         except sr.RequestError as e:
-            response.recognized_speech = "Could not request results from Google Speech Recognition service; {0}. Please try again!".format(e)
+            response.recognized_speech = "Could not request results from Google Speech Recognition service; {0}. Please try again!".format(
+                e
+            )
             response.success = False
             return response
+
 
 def main(args=None):
     rclpy.init(args=args)
 
     speech_recognition_node = Sarai_Speech_Recognition()
-    
+
     rclpy.spin(speech_recognition_node)
+
     speech_recognition_node.destroy_node()
     rclpy.shutdown()
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()
