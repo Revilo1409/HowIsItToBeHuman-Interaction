@@ -42,8 +42,6 @@ class Interaction(Node):
 
     def send_speak_request(self, gpt_response):
         request = SetSpeech.Request()
-
-        print(f"typ: {type(gpt_response)}")
         request.message = gpt_response
 
         self.future = self.speak_cli.call_async(request)
@@ -59,11 +57,12 @@ class Interaction(Node):
         return self.future.result()
 
     def interaction(self):
-        print("HELLO THERE")
         gpt_response = self.send_start_conversation_request()
         self.send_speak_request(gpt_response.chatgpt_response)
+
         while True:
             try:
+                print("Trying to recognize speech")
                 response = self.send_recognize_speech_request()
                 message = response.recognized_speech
                 success = response.success
