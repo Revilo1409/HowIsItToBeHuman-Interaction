@@ -16,14 +16,7 @@ class Sarai_Speech_Recognition(Node):
             RecognizeSpeech, "recognize_speech", self.recognize_speech_callback
         )
 
-        # Setting up microphone for Speech Recognition
         self.r = sr.Recognizer()
-        with sr.Microphone() as source:
-            self.r.adjust_for_ambient_noise(
-                source
-            )  # listen for 1 second to calibrate the energy threshold for ambient noise levels
-            print("Say something!")
-            self.audio = self.r.listen(source)
 
     def recognize_speech_callback(self, request, response):
         """
@@ -31,6 +24,14 @@ class Sarai_Speech_Recognition(Node):
         :param request: See RecognizeSpeech service definition.
         :param response: See RecognizeSpeech service definition.
         """
+        # Setting up microphone for Speech Recognition
+
+        with sr.Microphone() as source:
+            self.r.adjust_for_ambient_noise(
+                source
+            )  # listen for 1 second to calibrate the energy threshold for ambient noise levels
+            print("Say something!")
+            self.audio = self.r.listen(source, None)
 
         try:
             response.recognized_speech = self.r.recognize_google(self.audio)
