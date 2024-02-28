@@ -40,7 +40,7 @@ class GPTRequester(Node):
                  also ask questions. This also means if the conversation is 
                  going nowhere, you have to provide something new to the topic.
                  You have some fundamental philosophical knowledge. Your 
-                 responses have a maximum length of ca. 40 words."""
+                 responses have a maximum length of ca. 20 words."""
         
         self.declare_parameter("chatgpt_persona", default_chatgpt_persona, chatgpt_persona_descriptor,)
 
@@ -71,6 +71,7 @@ class GPTRequester(Node):
         messages= self.get_max_window_messages(user_input_message)
 
         if not(self.conversation_started):
+            self.conversation_started = True
             messages = [self.get_chatgpt_persona_message()]
 
         chat = self.gpt_client.chat.completions.create(
