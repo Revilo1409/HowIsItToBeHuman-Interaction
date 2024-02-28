@@ -64,6 +64,7 @@ class GPTRequester(Node):
         :param request: See GPTRequest service definition.
         :param response: See GPTRequest service definition
         """
+
         # Value between 0 and 1. Used to set the creativity of ChatGPTs answers
         temperature = 0.7
 
@@ -72,6 +73,7 @@ class GPTRequester(Node):
             messages=self.get_max_window_messages(request.user_input),
             temperature=temperature,
         )
+
         # TODO: Catch error from GPT response
         response.chatgpt_response = chat.choices[0].message.content
         response.success = True
@@ -82,6 +84,7 @@ class GPTRequester(Node):
         """
         Help method that appends role_message, last maxWindow_messages of
         message history and the user_input
+        
         :param user_input: Message the user wants to send to GPT API
         :return:  role_message, last maxWindow_messages of
                 message history and the user_input appended together
