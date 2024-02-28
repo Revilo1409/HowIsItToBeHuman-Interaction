@@ -19,7 +19,8 @@ class Sarai_Speech_Recognition(Node):
         # Initialize microphone by listening for 1 second to calibrate the energy 
         # threshold for ambient noise levels
         with sr.Microphone() as source:
-            self.speech_recognizer.adjust_for_ambient_noise(source)  
+            self.speech_recognizer.adjust_for_ambient_noise(source)
+            self.speech_recognizer.dynamic_energy_threshold = False
 
     def recognize_speech_callback(self, request, response):
         """
@@ -31,22 +32,24 @@ class Sarai_Speech_Recognition(Node):
 
         # Setting up microphone for Speech Recognition
         with sr.Microphone() as source:
+            #self.speech_recognizer.energy_threshold = 1070
+            print(f"Energy threshold: {self.speech_recognizer.energy_threshold}")
             print("Say something!")
             self.audio = self.speech_recognizer.listen(source, None)
             print("Said something")
 
-        try:
-            response.recognized_speech = self.speech_recognizer.recognize_google(self.audio)
-            response.success = True
-            return response
-        except sr.UnknownValueError:
-            response.recognized_speech = "Google Speech Recognition could not understand audio. Please try again!"
-            response.success = False
-            return response
-        except sr.RequestError as error:
-            response.recognized_speech = "Could not request results from Google Speech Recognition service; {0}. Please try again!".format(error)
-            response.success = False
-            return response
+            try:
+                response.recognized_speech = self.speech_recognizer.recognize_google(self.audio)
+                response.success = True
+                return response
+            except sr.UnknownValueError:
+                response.recognized_speech = "Google Speech Recognition could not understand audio. Please try again!"
+                response.success = False
+                return response
+            except sr.RequestError as error:
+                response.recognized_speech = "Could not request results from Google Speech Recognition service; {0}. Please try again!".format(error)
+                response.success = False
+                return response
 
 
 def main(args=None):
