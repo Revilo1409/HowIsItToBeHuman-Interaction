@@ -35,9 +35,7 @@ class GPTRequester(Node):
                             parameter for setting the role of ChatGPT"""
         )
         # Descriptor for maxWindow_messages parameter
-        maxWindow_messages_descriptor = ParameterDescriptor(
-            description="Max number of messages stored in the message history"
-        )
+        max_window_messages_descriptor = ParameterDescriptor(description="Max number of messages stored in the message history")
         # Descriptor for api_key parameter
         api_key_descriptor = ParameterDescriptor(description="API Key for ChatGPT API")
 
@@ -54,7 +52,7 @@ class GPTRequester(Node):
             role_descriptor,
         )
         # Parameter for setting the maximum number of messages in the history that should be sent to GPT
-        self.declare_parameter("maxWindow_messages", 100, maxWindow_messages_descriptor)
+        self.declare_parameter("max_window_messages", 100, max_window_messages_descriptor)
         # API Key for ChatGPT API
         # You must add OPENAI_API_KEY as an environment variable
         # In Ubuntu: echo 'export OPENAI_API_KEY=your_api_key' >> ~/.bashrc
@@ -78,7 +76,7 @@ class GPTRequester(Node):
 
         chat = self.client.chat.completions.create(
             model=self.MODEL,
-            messages=self.get_maxWindow_messages(request.user_input),
+            messages=self.get_max_window_messages(request.user_input),
             temperature=0.7,
         )
         # TODO: Catch error from GPT response
@@ -87,7 +85,7 @@ class GPTRequester(Node):
 
         return response
 
-    def get_maxWindow_messages(self, user_input):
+    def get_max_window_messages(self, user_input):
         """
         Help method that appends role_message, last maxWindow_messages of
         message history and the user_input
@@ -97,16 +95,16 @@ class GPTRequester(Node):
         """
 
         role_message = self.get_role_message()
-        maxWindow_messages = (
-            self.get_parameter("maxWindow_messages").get_parameter_value().integer_value
+        max_window_messages = (
+            self.get_parameter("max_window_messages").get_parameter_value().integer_value
         )
 
         # Appends the current user input to the message history
         self.MESSAGE_HISTORY.append({"role": "user", "content": user_input})
 
         # Returns the role message, and max. the last 4 messages of the message history + the current user input
-        if len(self.MESSAGE_HISTORY) > maxWindow_messages + 1:
-            return [role_message] + (self.MESSAGE_HISTORY[-(maxWindow_messages + 1) :])
+        if len(self.MESSAGE_HISTORY) > max_window_messages + 1:
+            return [role_message] + (self.MESSAGE_HISTORY[-(max_window_messages + 1) :])
         else:
             return [role_message] + (self.MESSAGE_HISTORY)
 
