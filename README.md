@@ -51,7 +51,7 @@ Allows to send messages to ChatGPT.
 
 #### Parameters
 
-* **`role`** (string, default: '')
+* **`chatgpt_persona`** (string, default: '')
 
     The role given to ChatGPT by the user
 
