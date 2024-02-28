@@ -61,6 +61,6 @@ Allows to send messages to ChatGPT.
     conversations with humans on fundamental topics. You are leading the conversation and thus also ask questions. This also means if the conversation is going nowhere, you have to provide something new to the topic.You have some fundamental philosophical knowledge. Your responses have a maximum length of ca. 40 words.
     ```
 
-* **`maxWindow_messages`** (int, default: 100)
+* **`max_window_messages`** (int, default: 100)
 
-    The maximum number of messages from the message history, that should be sent in the request
+    The maximum number of messages from the message history, that should be sent in the request to ChatGPT. It can be necessary to limit this, because the message history is sent to ChatGPT in every request to construct the next response. Limiting this can reduce the response time of the request (especially in longer conversations) and also limit the costs of using the API (you pay for every word you send in the request).
