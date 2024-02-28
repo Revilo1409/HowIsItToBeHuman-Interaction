@@ -3,6 +3,7 @@ from rclpy.node import Node
 
 from sarai_msgs.srv import SetSpeech, GPTRequest, RecognizeSpeech
 
+from pixelbot_msgs.srv import DisplayEmotion
 
 class Interaction(Node):
     def __init__(self):
@@ -16,10 +17,29 @@ class Interaction(Node):
             RecognizeSpeech, "recognize_speech"
         )
 
+        # Create client to perform emotion
+        self.display_emotion_cli = self.create_client(DisplayEmotion, 'display_emotion')
+
         while not self.gpt_request_cli.wait_for_service(timeout_sec=1.0):
             self.get_logger().info(
                 f"{self.gpt_request_cli.srv_name} service not available, waiting again..."
             )
+
+    def send_display_emotion_request(self, desired_emotion):
+        """
+        Send a request to the display_emotion service server.
+
+        :param desired_emotion: String to specify which emotion
+                                should be displayed.
+        """
+
+        self.request = DisplayEmotion.Request()
+        self.request.desired_emotion = desired_emotion
+
+        self.future = self.display_emotion_cli.call_async(self.request)
+        rclpy.spin_until_future_complete(self, self.future)
+
+        return self.future.result()
 
     def send_gpt_request(self, user_input):
         request = GPTRequest.Request()
@@ -48,6 +68,7 @@ class Interaction(Node):
         
         # Empty input for starting the conversation with ChatGPT
         gpt_response = self.send_gpt_request("")
+        self.send_display_emotion_request("surprise")
         self.send_speak_request(gpt_response.chatgpt_response)
 
         while True:
