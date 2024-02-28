@@ -12,14 +12,14 @@ def generate_launch_description():
             package='sarai_chatgpt',
             executable='gpt_requester_node',
             parameters=[
-                {'role': '''You are now a social robot with an actual robot 
+                {'chatgpt_persona': '''You are now a social robot with an actual robot 
                  body, who will have open conversations with humans on 
                  fundamental topics. You are leading the conversation and thus 
                  also ask questions. This also means if the conversation is 
                  going nowhere, you have to provide something new to the topic.
                  You have some fundamental philosophical knowledge. Your 
                  responses have a maximum length of ca. 40 words.'''},
-                {'maxWindow_messages': 4},         
+                {'max_window_messages': 4},         
             ]
         ),
         Node(
@@ -34,5 +34,9 @@ def generate_launch_description():
         Node(
             package='sarai_speech_recognition',
             executable= 'sarai_speech_recognition_node'
+        ),
+        Node(
+            package='pixelbot_display',
+            executable='pixelbot_display_node'
         )
     ])
