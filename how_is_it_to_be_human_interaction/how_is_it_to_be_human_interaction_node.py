@@ -10,10 +10,6 @@ class Interaction(Node):
 
         self.gpt_request_cli = self.create_client(GPTRequest, "gpt_request")
 
-        self.start_conversation_cli = self.create_client(
-            GPTRequest, "start_conversation"
-        )
-
         self.speak_cli = self.create_client(SetSpeech, "speak")
 
         self.recognize_speech_cli = self.create_client(
@@ -30,14 +26,6 @@ class Interaction(Node):
         request.user_input = user_input
         self.future = self.gpt_request_cli.call_async(request)
         rclpy.spin_until_future_complete(self, self.future)
-        return self.future.result()
-
-    def send_start_conversation_request(self):
-        request = GPTRequest.Request()
-
-        self.future = self.start_conversation_cli.call_async(request)
-        rclpy.spin_until_future_complete(self, self.future)
-
         return self.future.result()
 
     def send_speak_request(self, gpt_response):
@@ -57,7 +45,9 @@ class Interaction(Node):
         return self.future.result()
 
     def interaction(self):
-        gpt_response = self.send_start_conversation_request()
+        
+        # Empty input for starting the conversation with ChatGPT
+        gpt_response = self.send_gpt_request("")
         self.send_speak_request(gpt_response.chatgpt_response)
 
         while True:
