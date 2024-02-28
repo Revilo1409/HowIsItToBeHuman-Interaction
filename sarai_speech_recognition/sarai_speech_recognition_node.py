@@ -12,15 +12,14 @@ class Sarai_Speech_Recognition(Node):
         super().__init__("sarai_speech_recognition_node")
 
         # Service to perform speech recognition
-        self.recognize_speech_srv = self.create_service(
-            RecognizeSpeech, "recognize_speech", self.recognize_speech_callback
-        )
+        self.recognize_speech_srv = self.create_service(RecognizeSpeech, "recognize_speech", self.recognize_speech_callback)
 
         self.speech_recognizer = sr.Recognizer()
+
+        # Initialize microphone by listening for 1 second to calibrate the energy 
+        # threshold for ambient noise levels
         with sr.Microphone() as source:
-            self.speech_recognizer.adjust_for_ambient_noise(
-                source
-            )  # listen for 1 second to calibrate the energy threshold for ambient noise levels
+            self.speech_recognizer.adjust_for_ambient_noise(source)  
 
     def recognize_speech_callback(self, request, response):
         """
