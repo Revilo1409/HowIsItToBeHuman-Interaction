@@ -58,10 +58,10 @@ class GPTRequester(Node):
 
     def gpt_request_callback(self, request, response):
         """
-                Service handler performing a request to the GPT API
-        Das hat der PC verstanden
-                :param request: See GPTRequest service definition.
-                :param response: See GPTRequest service definition
+        Service handler performing a request to the GPT API
+
+        :param request: See GPTRequest service definition.
+        :param response: See GPTRequest service definition
         """
 
         chat = self.gpt_client.chat.completions.create(
