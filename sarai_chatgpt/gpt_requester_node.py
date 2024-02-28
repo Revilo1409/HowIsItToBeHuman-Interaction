@@ -63,10 +63,12 @@ class GPTRequester(Node):
         :param response: See GPTRequest service definition
         """
 
+        user_input_message = {"role": "user", "content": request.user_input}
+
         # Value between 0 and 1. Used to set the creativity of ChatGPTs answers
         temperature = 0.7
         
-        messages= self.get_max_window_messages(request.user_input)
+        messages= self.get_max_window_messages(user_input_message)
 
         if not(self.conversation_started):
             messages = [self.get_chatgpt_persona_message()]
@@ -78,12 +80,16 @@ class GPTRequester(Node):
         )
 
         # TODO: Catch error from GPT response
-        response.chatgpt_response = chat.choices[0].message.content
+        chatgpt_response = chat.choices[0].message.content
+        response.chatgpt_response = chatgpt_response
         response.success = True
+
+        self.message_history.append(user_input_message)
+        self.message_history.append({"role": "assistant", "content": chatgpt_response})
 
         return response
 
-    def get_max_window_messages(self, user_input):
+    def get_max_window_messages(self, user_input_message):
         """
         Help method that appends role_message, last maxWindow_messages of
         message history and the user_input
@@ -93,14 +99,17 @@ class GPTRequester(Node):
                 message history and the user_input appended together
         """
 
-        role_message = self.get_chatgpt_persona_message()
+        chatgpt_persona_message = self.get_chatgpt_persona_message()
         max_window_messages = self.get_parameter("max_window_messages").get_parameter_value().integer_value
 
-        # Appends the current user input to the message history
-        self.message_history.append({"role": "user", "content": user_input})
+        last_max_window_messages = self.message_history[-max_window_messages:]
+        # Prepends the chatgpt_persona_message
+        last_max_window_messages.insert(0, chatgpt_persona_message)
+        # Appends the current user input message to the return value
+        last_max_window_messages.append(user_input_message)
 
-        # Returns the role message, and max. the last 4 messages of the message history + the current user input
-        return [role_message] + (self.message_history[-(max_window_messages + 1) :])
+        # Returns the role message, and max. the last 4 messages of the message history + the current user input message
+        return last_max_window_messages
 
     def get_chatgpt_persona_message(self):
         """
