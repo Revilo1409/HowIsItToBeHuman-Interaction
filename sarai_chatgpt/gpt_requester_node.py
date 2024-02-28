@@ -94,9 +94,7 @@ class GPTRequester(Node):
         """
 
         role_message = self.get_chatgpt_persona_message()
-        max_window_messages = (
-            self.get_parameter("max_window_messages").get_parameter_value().integer_value
-        )
+        max_window_messages = self.get_parameter("max_window_messages").get_parameter_value().integer_value
 
         # Appends the current user input to the message history
         self.message_history.append({"role": "user", "content": user_input})
