@@ -100,10 +100,7 @@ class GPTRequester(Node):
         self.message_history.append({"role": "user", "content": user_input})
 
         # Returns the role message, and max. the last 4 messages of the message history + the current user input
-        if len(self.message_history) > max_window_messages + 1:
-            return [role_message] + (self.message_history[-(max_window_messages + 1) :])
-        else:
-            return [role_message] + (self.message_history)
+        return [role_message] + (self.message_history[-(max_window_messages + 1) :])
 
     def get_chatgpt_persona_message(self):
         """
