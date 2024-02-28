@@ -20,6 +20,9 @@ class Sarai_Speech_Recognition(Node):
         # threshold for ambient noise levels
         with sr.Microphone() as source:
             self.speech_recognizer.adjust_for_ambient_noise(source)
+
+            # Need to disable dynamic energy threshold, otherwise 
+            # SpeechRecognition won't work after a few times
             self.speech_recognizer.dynamic_energy_threshold = False
 
     def recognize_speech_callback(self, request, response):
