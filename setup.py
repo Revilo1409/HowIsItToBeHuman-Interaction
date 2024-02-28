@@ -15,7 +15,7 @@ setup(
     zip_safe=True,
     maintainer='oliver-aberle',
     maintainer_email='oliver-aberle@todo.todo',
-    description='TODO: Package description',
+    description='Package allowing to send requests to Chat GPT via the API',
     license='Apache-2.0',
     tests_require=['pytest'],
     entry_points={

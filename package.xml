@@ -3,7 +3,7 @@
 <package format="3">
   <name>sarai_chatgpt</name>
   <version>0.0.0</version>
-  <description>TODO: Package description</description>
+  <description>Package allowing to send requests to Chat GPT via the API</description>
   <maintainer email="oliver-aberle@todo.todo">oliver-aberle</maintainer>
   <license>Apache-2.0</license>
 
