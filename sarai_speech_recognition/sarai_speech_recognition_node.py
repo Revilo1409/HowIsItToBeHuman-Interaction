@@ -24,6 +24,7 @@ class Sarai_Speech_Recognition(Node):
     def recognize_speech_callback(self, request, response):
         """
         Service handler performing the speech recognition
+        
         :param request: See RecognizeSpeech service definition.
         :param response: See RecognizeSpeech service definition.
         """
