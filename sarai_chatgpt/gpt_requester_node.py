@@ -64,11 +64,13 @@ class GPTRequester(Node):
         :param request: See GPTRequest service definition.
         :param response: See GPTRequest service definition
         """
+        # Value between 0 and 1. Used to set the creativity of ChatGPTs answers
+        temperature = 0.7
 
         chat = self.gpt_client.chat.completions.create(
             model=self.MODEL,
             messages=self.get_max_window_messages(request.user_input),
-            temperature=0.7,
+            temperature=temperature,
         )
         # TODO: Catch error from GPT response
         response.chatgpt_response = chat.choices[0].message.content
