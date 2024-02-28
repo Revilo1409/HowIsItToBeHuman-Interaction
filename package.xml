@@ -4,7 +4,7 @@
   <name>sarai_chatgpt</name>
   <version>0.0.0</version>
   <description>Package allowing to send requests to Chat GPT via the API</description>
-  <maintainer email="oliver-aberle@todo.todo">oliver-aberle</maintainer>
+  <maintainer email="oliver.aberle@student.kit.edu">oliver-aberle</maintainer>
   <license>Apache-2.0</license>
 
   <exec_depend>rclpy</exec_depend>

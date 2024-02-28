@@ -14,7 +14,7 @@ setup(
     install_requires=['setuptools'],
     zip_safe=True,
     maintainer='oliver-aberle',
-    maintainer_email='oliver-aberle@todo.todo',
+    maintainer_email='oliver.aberle@student.kit.edu',
     description='Package allowing to send requests to Chat GPT via the API',
     license='Apache-2.0',
     tests_require=['pytest'],
