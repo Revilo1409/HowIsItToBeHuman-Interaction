@@ -84,9 +84,9 @@ class GPTRequester(Node):
         """
         Help method that appends role_message, last maxWindow_messages of
         message history and the user_input
-        
+
         :param user_input: Message the user wants to send to GPT API
-        :return:  role_message, last maxWindow_messages of
+        :return: role_message, last maxWindow_messages of
                 message history and the user_input appended together
         """
 
@@ -105,10 +105,17 @@ class GPTRequester(Node):
             return [role_message] + (self.MESSAGE_HISTORY)
 
     def get_role_message(self):
-        return {
+        """
+        Returns the formatted role message by using the role parameter.
+
+        :return: Dict containing the role message.
+        """
+        role_message = {
             "role": "system",
             "content": self.get_parameter("role").get_parameter_value().string_value,
         }
+
+        return role_message
 
     def start_conversation_callback(self, request, response):
 
