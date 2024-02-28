@@ -24,16 +24,17 @@ class Sarai_Speech_Recognition(Node):
     def recognize_speech_callback(self, request, response):
         """
         Service handler performing the speech recognition
-        
+
         :param request: See RecognizeSpeech service definition.
         :param response: See RecognizeSpeech service definition.
         """
-        # Setting up microphone for Speech Recognition
 
+        # Setting up microphone for Speech Recognition
         with sr.Microphone() as source:
             print("Say something!")
             self.audio = self.speech_recognizer.listen(source, None)
             print("Said something")
+            
         try:
             response.recognized_speech = self.speech_recognizer.recognize_google(self.audio)
             response.success = True
@@ -43,9 +44,7 @@ class Sarai_Speech_Recognition(Node):
             response.success = False
             return response
         except sr.RequestError as e:
-            response.recognized_speech = "Could not request results from Google Speech Recognition service; {0}. Please try again!".format(
-                e
-            )
+            response.recognized_speech = "Could not request results from Google Speech Recognition service; {0}. Please try again!".format(e)
             response.success = False
             return response
 
