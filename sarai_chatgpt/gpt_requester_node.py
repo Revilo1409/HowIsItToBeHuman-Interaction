@@ -33,15 +33,16 @@ class GPTRequester(Node):
         api_key_descriptor = ParameterDescriptor(description="API Key for ChatGPT API")
 
         # Parameter for setting the role of ChatGPT
-        self.declare_parameter(
-            "role",
-            """You are now a social robot with an actual robot 
+        default_role = """You are now a social robot with an actual robot 
                  body, who will have open conversations with humans on 
                  fundamental topics. You are leading the conversation and thus 
                  also ask questions. This also means if the conversation is 
                  going nowhere, you have to provide something new to the topic.
                  You have some fundamental philosophical knowledge. Your 
-                 responses have a maximum length of ca. 40 words.""",
+                 responses have a maximum length of ca. 40 words."""
+        self.declare_parameter(
+            "role",
+            default_role,
             role_descriptor,
         )
 
