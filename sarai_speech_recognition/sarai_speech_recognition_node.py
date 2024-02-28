@@ -16,9 +16,9 @@ class Sarai_Speech_Recognition(Node):
             RecognizeSpeech, "recognize_speech", self.recognize_speech_callback
         )
 
-        self.r = sr.Recognizer()
+        self.speech_recognizer = sr.Recognizer()
         with sr.Microphone() as source:
-            self.r.adjust_for_ambient_noise(
+            self.speech_recognizer.adjust_for_ambient_noise(
                 source
             )  # listen for 1 second to calibrate the energy threshold for ambient noise levels
 
@@ -32,10 +32,10 @@ class Sarai_Speech_Recognition(Node):
 
         with sr.Microphone() as source:
             print("Say something!")
-            self.audio = self.r.listen(source, None)
+            self.audio = self.speech_recognizer.listen(source, None)
             print("Said something")
         try:
-            response.recognized_speech = self.r.recognize_google(self.audio)
+            response.recognized_speech = self.speech_recognizer.recognize_google(self.audio)
             response.success = True
             return response
         except sr.UnknownValueError:
