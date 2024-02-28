@@ -21,19 +21,12 @@ class GPTRequester(Node):
         super().__init__("gptrequester")
 
         # Service for sending a text request to the GPT API
-        self.gpt_request_srv = self.create_service(
-            GPTRequest, "gpt_request", self.gpt_request_callback
-        )
+        self.gpt_request_srv = self.create_service(GPTRequest, "gpt_request", self.gpt_request_callback)
         # Service for starting the conversation with GPT
-        self.start_conversation_srv = self.create_service(
-            GPTRequest, "start_conversation", self.start_conversation_callback
-        )
+        self.start_conversation_srv = self.create_service(GPTRequest, "start_conversation", self.start_conversation_callback)
 
         # Descriptor for role parameter
-        role_descriptor = ParameterDescriptor(
-            description="""This is a 
-                            parameter for setting the role of ChatGPT"""
-        )
+        role_descriptor = ParameterDescriptor(description="This is a parameter for setting the role of ChatGPT")
         # Descriptor for maxWindow_messages parameter
         max_window_messages_descriptor = ParameterDescriptor(description="Max number of messages stored in the message history")
         # Descriptor for api_key parameter
@@ -51,20 +44,17 @@ class GPTRequester(Node):
                  responses have a maximum length of ca. 40 words.""",
             role_descriptor,
         )
+
         # Parameter for setting the maximum number of messages in the history that should be sent to GPT
         self.declare_parameter("max_window_messages", 100, max_window_messages_descriptor)
-        # API Key for ChatGPT API
+        # TODO: ADD THIS IN README --> API Key for ChatGPT API
         # You must add OPENAI_API_KEY as an environment variable
         # In Ubuntu: echo 'export OPENAI_API_KEY=your_api_key' >> ~/.bashrc
         # Get the API key from the environment variable.
-        self.declare_parameter(
-            "api_key", os.getenv("OPENAI_API_KEY"), api_key_descriptor
-        )
+        self.declare_parameter("api_key", os.getenv("OPENAI_API_KEY"), api_key_descriptor)
 
         # Creating client for communicating with GPT API
-        self.client = OpenAI(
-            api_key=self.get_parameter("api_key").get_parameter_value().string_value
-        )
+        self.gpt_client = OpenAI(api_key=self.get_parameter("api_key").get_parameter_value().string_value)
 
     def gpt_request_callback(self, request, response):
         """
@@ -74,7 +64,7 @@ class GPTRequester(Node):
                 :param response: See GPTRequest service definition
         """
 
-        chat = self.client.chat.completions.create(
+        chat = self.gpt_client.chat.completions.create(
             model=self.MODEL,
             messages=self.get_max_window_messages(request.user_input),
             temperature=0.7,
@@ -116,7 +106,7 @@ class GPTRequester(Node):
 
     def start_conversation_callback(self, request, response):
 
-        chat = self.client.chat.completions.create(
+        chat = self.gpt_client.chat.completions.create(
             model=self.MODEL,
             messages=[self.get_role_message()],
             temperature=0.7,
