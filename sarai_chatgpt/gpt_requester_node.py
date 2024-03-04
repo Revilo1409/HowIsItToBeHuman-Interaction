@@ -70,7 +70,7 @@ class GPTRequester(Node):
         
         messages = self.get_max_window_messages(user_input_message)
 
-        if not(self.conversation_started):
+        if not self.conversation_started:
             self.conversation_started = True
             messages = [self.get_chatgpt_persona_message()]
 
