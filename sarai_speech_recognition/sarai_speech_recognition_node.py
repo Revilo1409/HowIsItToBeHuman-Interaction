@@ -40,18 +40,18 @@ class Sarai_Speech_Recognition(Node):
             self.audio = self.speech_recognizer.listen(source, None)
             print("Said something")
 
-            try:
-                response.recognized_speech = self.speech_recognizer.recognize_google(self.audio)
-                response.success = True
-                return response
-            except sr.UnknownValueError:
-                response.recognized_speech = "Google Speech Recognition could not understand audio. Please try again!"
-                response.success = False
-                return response
-            except sr.RequestError as error:
-                response.recognized_speech = "Could not request results from Google Speech Recognition service; {0}. Please try again!".format(error)
-                response.success = False
-                return response
+        try:
+            response.recognized_speech = self.speech_recognizer.recognize_google(self.audio)
+            response.success = True
+            return response
+        except sr.UnknownValueError:
+            response.recognized_speech = "Google Speech Recognition could not understand audio. Please try again!"
+            response.success = False
+            return response
+        except sr.RequestError as error:
+            response.recognized_speech = "Could not request results from Google Speech Recognition service; {0}. Please try again!".format(error)
+            response.success = False
+            return response
 
 
 def main(args=None):
