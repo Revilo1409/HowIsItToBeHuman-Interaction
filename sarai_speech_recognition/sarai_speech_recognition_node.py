@@ -35,7 +35,6 @@ class Sarai_Speech_Recognition(Node):
 
         # Setting up microphone for Speech Recognition
         with sr.Microphone() as source:
-            #self.speech_recognizer.energy_threshold = 1070
             print(f"Energy threshold: {self.speech_recognizer.energy_threshold}")
             print("Say something!")
             self.audio = self.speech_recognizer.listen(source, None)
