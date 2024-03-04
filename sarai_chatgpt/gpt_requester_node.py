@@ -28,8 +28,10 @@ class GPTRequester(Node):
 
         # Descriptor for role parameter
         chatgpt_persona_descriptor = ParameterDescriptor(description="This is a parameter for setting the role of ChatGPT")
+
         # Descriptor for maxWindow_messages parameter
         max_window_messages_descriptor = ParameterDescriptor(description="Max number of messages stored in the message history")
+
         # Descriptor for api_key parameter
         api_key_descriptor = ParameterDescriptor(description="API Key for ChatGPT API")
 
@@ -46,6 +48,7 @@ class GPTRequester(Node):
 
         # Parameter for setting the maximum number of messages in the history that should be sent to GPT
         self.declare_parameter("max_window_messages", 100, max_window_messages_descriptor)
+
         # TODO: ADD THIS IN README --> API Key for ChatGPT API
         # You must add OPENAI_API_KEY as an environment variable
         # In Ubuntu: echo 'export OPENAI_API_KEY=your_api_key' >> ~/.bashrc
@@ -104,8 +107,10 @@ class GPTRequester(Node):
         max_window_messages = self.get_parameter("max_window_messages").get_parameter_value().integer_value
 
         last_max_window_messages = self.message_history[-max_window_messages:]
+
         # Prepends the chatgpt_persona_message
         last_max_window_messages.insert(0, chatgpt_persona_message)
+
         # Appends the current user input message to the return value
         last_max_window_messages.append(user_input_message)
 
@@ -118,6 +123,7 @@ class GPTRequester(Node):
 
         :return: Dict containing the role message.
         """
+        
         chatgpt_persona_message = {
             "role": "system",
             "content": self.get_parameter("chatgpt_persona").get_parameter_value().string_value,
