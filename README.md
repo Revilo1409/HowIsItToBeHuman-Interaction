@@ -57,7 +57,8 @@ Allows to send messages to ChatGPT.
 
     Example:
     ```
-    You are now a social robot with an actual robot body, who will have open conversations with humans on fundamental topics. You are leading the conversation and thus also ask questions. This also means if the conversation is going nowhere, you have to provide something new to the topic.You have some fundamental philosophical knowledge. Your responses have a maximum length of ca. 40 words.
+    You are now a social robot with an actual robot body, who will have open
+    conversations with humans on fundamental topics. You are leading the conversation and thus also ask questions. This also means if the conversation is going nowhere, you have to provide something new to the topic.You have some fundamental philosophical knowledge. Your responses have a maximum length of ca. 40 words.
     ```
 
 * **`max_window_messages`** (int, default: 100)
