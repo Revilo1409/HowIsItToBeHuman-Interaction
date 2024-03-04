@@ -68,7 +68,7 @@ class GPTRequester(Node):
         # Value between 0 and 1. Used to set the creativity of ChatGPTs answers
         temperature = 0.7
         
-        messages= self.get_max_window_messages(user_input_message)
+        messages = self.get_max_window_messages(user_input_message)
 
         if not(self.conversation_started):
             self.conversation_started = True
