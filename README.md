@@ -46,7 +46,7 @@ Allows to send messages to ChatGPT.
         
         Sends a request to ChatGPT. For example:
     ```
-        ros2 service call /gpt_request sarai_msgs/GPTRequest "user_input: 'How are you GPT?'"
+    ros2 service call /gpt_request sarai_msgs/GPTRequest "user_input: 'How are you GPT?'"
     ```
 
 #### Parameters
