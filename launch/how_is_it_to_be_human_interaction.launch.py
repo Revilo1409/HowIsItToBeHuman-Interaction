@@ -18,7 +18,7 @@ def generate_launch_description():
                  also ask questions. This also means if the conversation is 
                  going nowhere, you have to provide something new to the topic.
                  You have some fundamental philosophical knowledge. Your 
-                 responses have a maximum length of ca. 40 words.'''},
+                 responses have a maximum length of ca. 20 words.'''},
                 {'max_window_messages': 4},         
             ]
         ),
