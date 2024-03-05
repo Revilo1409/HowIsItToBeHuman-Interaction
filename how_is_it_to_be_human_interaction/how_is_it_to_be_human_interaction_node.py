@@ -16,8 +16,9 @@ class Interaction(Node):
         # Create client to recognize speech
         self.recognize_speech_cli = self.create_client(RecognizeSpeech, 'recognize_speech')
 
-        while not self.gpt_request_cli.wait_for_service(timeout_sec=1.0):
-            self.get_logger().info(f'{self.gpt_request_cli.srv_name} service not available, waiting again...')
+        for client in [self.gpt_request_cli, self.speak_cli, self.recognize_speech_cli]:
+            while not client.wait_for_service(timeout_sec=1.0):
+                self.get_logger().info(f'{client.srv_name} service not available, waiting again...')
     
     def send_gpt_request(self, user_input):
         """
