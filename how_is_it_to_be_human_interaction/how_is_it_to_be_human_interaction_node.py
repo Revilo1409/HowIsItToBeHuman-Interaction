@@ -68,13 +68,13 @@ class Interaction(Node):
         
         # Empty input for starting the conversation with ChatGPT
         gpt_response = self.send_gpt_request("")
-        self.send_display_emotion_request("surprise")
         self.send_speak_request(gpt_response.chatgpt_response)
 
         while True:
             try:
                 print("Trying to recognize speech")
                 response = self.send_recognize_speech_request()
+                self.send_display_emotion_request("surprise")
                 message = response.recognized_speech
                 success = response.success
             except KeyboardInterrupt:
