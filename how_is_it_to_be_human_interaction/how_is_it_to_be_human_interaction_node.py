@@ -1,7 +1,7 @@
 import rclpy
 from rclpy.node import Node
 
-from sarai_msgs.srv import SetSpeech, GPTRequest, RecognizeSpeech
+from sarai_msgs.srv import SetSpeech, GPTRequest, RecognizeSpeech, SetVoiceAlteration
 
 from pixelbot_msgs.srv import DisplayEmotion
 
@@ -19,6 +19,9 @@ class Interaction(Node):
 
         # Create client to perform emotion
         self.display_emotion_cli = self.create_client(DisplayEmotion, 'display_emotion')
+
+        # Create a client for setting the voice alteration
+        self.set_voice_alteration_cli = self.create_client(SetVoiceAlteration, 'set_voice_alteration')
 
         while not self.gpt_request_cli.wait_for_service(timeout_sec=1.0):
             self.get_logger().info(
@@ -63,9 +66,21 @@ class Interaction(Node):
         self.future = self.recognize_speech_cli.call_async(request)
         rclpy.spin_until_future_complete(self, self.future)
         return self.future.result()
+    
+    def send_set_voice_alteration_request(self, voice_alteration):
+
+        request = SetVoiceAlteration.Request()
+        request.is_voice_altered = voice_alteration
+
+        self.future = self.set_voice_alteration_cli.call_async(request)
+
+        rclpy.spin_until_future_complete(self, self.future)
+        return self.future.result()
 
     def interaction(self):
         
+        _ = self.send_set_voice_alteration_request(False)
+
         # Empty input for starting the conversation with ChatGPT
         gpt_response = self.send_gpt_request("")
         self.send_speak_request(gpt_response.chatgpt_response)
