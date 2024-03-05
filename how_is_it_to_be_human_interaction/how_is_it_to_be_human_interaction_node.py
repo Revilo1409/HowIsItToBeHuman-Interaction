@@ -39,6 +39,7 @@ class Interaction(Node):
         Send a request to the speak service server.
         :param message: String to specify the text to be spoken.
         """
+
         request = SetSpeech.Request()
         request.message = message
 
@@ -51,6 +52,7 @@ class Interaction(Node):
         """
         Send a request to the recognize_speech service server.
         """
+        
         request = RecognizeSpeech.Request()
 
         self.future = self.recognize_speech_cli.call_async(request)
