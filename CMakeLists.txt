@@ -19,6 +19,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/SetSpeech.srv"
   "srv/SetVoiceAlteration.srv"
   "srv/RecognizeSpeech.srv"
+  "srv/GetGPTRequestParams.srv"
 )
 
 if(BUILD_TESTING)
