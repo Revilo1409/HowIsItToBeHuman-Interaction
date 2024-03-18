@@ -209,7 +209,7 @@ class Interaction(Node):
                 self.send_speak_request(gpt_response.chatgpt_response)
             else:
                 self.send_speak_request(
-                    "Sorry, I did not understand you. Can you please repeadt what you said?"
+                    "Sorry, I did not understand you. Can you please repeat what you said?"
                 )
                 print("Message finished.")
         print("\nClosing GPTClient...")
