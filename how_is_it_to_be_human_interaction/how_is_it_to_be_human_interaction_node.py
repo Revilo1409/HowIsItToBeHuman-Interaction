@@ -7,6 +7,8 @@ from sarai_msgs.srv import SetSpeech, GPTRequest, RecognizeSpeech, SetVoiceAlter
 
 from pixelbot_msgs.srv import DisplayEmotion
 
+import logging, logging.handlers
+
 class Interaction(Node):
     def __init__(self):
         super().__init__("how_is_it_to_be_human_interaction_node")
@@ -95,15 +97,38 @@ class Interaction(Node):
         
         return self.future.result()
 
+    def set_up_logger(self):
+         
+        filename = "chat.log"
+
+        self.logger = logging.getLogger()
+        self.logger.setLevel(logging.INFO)
+        formatter = logging.Formatter("%(message)s")
+
+        handler = logging.handlers.RotatingFileHandler(filename, mode = 'w', backupCount=10)
+        handler.setLevel(logging.INFO)
+        handler.setFormatter(formatter)
+        logging.handlers.RotatingFileHandler.doRollover(handler)
+        self.logger.addHandler(handler)
+
+
+
+
     def interaction(self):
 
+        self.set_up_logger()
+
         gpt_params = self.send_get_gpt_request_params_request()
-        self.get_logger().info(gpt_params.chatgpt_persona)
-        
+        gpt_params_string = f"ChatGPT persona: {gpt_params.chatgpt_persona} \n" 
+        gpt_params_string += f"Temperature: {gpt_params.temperature}\n"
+        gpt_params_string += f"Max Window of last messages: {gpt_params.max_window_messages}\n ---"
+        self.logger.info(gpt_params_string)
+
         self.send_change_voice_alteration_request(False)
 
         # Empty input for starting the conversation with ChatGPT
         gpt_response = self.send_gpt_request("")
+        self.logger.info(f"Robot: {gpt_response.chatgpt_response}")
         self.send_speak_request(gpt_response.chatgpt_response)
 
         while True:
@@ -116,8 +141,10 @@ class Interaction(Node):
             except KeyboardInterrupt:
                 break
             if success:
+                self.logger.info(f"User: {message}")
                 print(f"The PC understood this:{message}")
                 gpt_response = self.send_gpt_request(message)
+                self.logger.info(f"Robot: {gpt_response.chatgpt_response}")
                 print(f"GPT: {gpt_response.chatgpt_response}")
                 self.send_speak_request(gpt_response.chatgpt_response)
             else:
