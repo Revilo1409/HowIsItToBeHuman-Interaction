@@ -26,6 +26,9 @@ class GPTRequester(Node):
         # Service for sending a text request to the GPT API
         self.gpt_request_srv = self.create_service(GPTRequest, "gpt_request", self.gpt_request_callback)
 
+        # Service for getting the necessary independant variables from the parameters
+        self.get_gpt_request_params_srv = self.create_service(GetGPTRequestParams, "get_gpt_request_params", self.get_gpt_request_params_callback)
+
         # Descriptor for role parameter
         chatgpt_persona_descriptor = ParameterDescriptor(description="This is a parameter for setting the role of ChatGPT")
 
@@ -62,8 +65,6 @@ class GPTRequester(Node):
 
         # Creating client for communicating with GPT API
         self.gpt_client = OpenAI(api_key=self.get_parameter("api_key").get_parameter_value().string_value)
-
-        # Creating a client for getting the 
 
     def gpt_request_callback(self, request, response):
         """
@@ -143,6 +144,17 @@ class GPTRequester(Node):
 
         return chatgpt_persona_message
     
+    def get_gpt_request_params_callback(self, request, response):
+        """
+        Service handler returning all parameters.
+
+        :return: All parameters (but not api_key)
+        """
+        response.chatgpt_persona = self.get_parameter("chatgpt_persona").get_parameter_value().string_value
+        response.temperature = self.get_parameter("temperature").get_parameter_value()._double_value
+        response.max_window_messages = self.get_parameter("max_window_messages").get_parameter_value().integer_value
+        return response
+
 
 def main(args=None):
     rclpy.init(args=args)
