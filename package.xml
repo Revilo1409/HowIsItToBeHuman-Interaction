@@ -3,7 +3,7 @@
 <package format="3">
   <name>how_is_it_to_be_human_interaction</name>
   <version>0.0.0</version>
-  <description>TODO: Package description</description>
+  <description>Package taking care of the main interaction of my thesis: Handling a discussion with a robot that uses ChatGPT and a human</description>
   <maintainer email="Oliver.Aberle@student.kit.edu">oliver-aberle</maintainer>
   <license>Apache-2.0</license>
 

@@ -15,10 +15,13 @@ class Interaction(Node):
     def __init__(self):
         super().__init__("how_is_it_to_be_human_interaction_node")
 
+        # Create client to send a request to ChatGPT
         self.gpt_request_cli = self.create_client(GPTRequest, "gpt_request")
 
+        # Create client to make PixelBot speak
         self.speak_cli = self.create_client(SetSpeech, "speak")
 
+        # Create client to recognize speech
         self.recognize_speech_cli = self.create_client(
             RecognizeSpeech, "recognize_speech"
         )
@@ -32,10 +35,9 @@ class Interaction(Node):
         # Create client to get parameters of gpt_requester
         self.get_gpt_request_params_cli = self.create_client(GetGPTRequestParams, 'get_gpt_request_params')
 
-        while not self.gpt_request_cli.wait_for_service(timeout_sec=1.0):
-            self.get_logger().info(
-                f"{self.gpt_request_cli.srv_name} service not available, waiting again..."
-            )
+        for client in [self.gpt_request_cli, self.speak_cli, self.recognize_speech_cli]:
+            while not client.wait_for_service(timeout_sec=1.0):
+                self.get_logger().info(f'{client.srv_name} service not available, waiting again...')
 
     def send_display_emotion_request(self, desired_emotion):
         """
@@ -54,26 +56,44 @@ class Interaction(Node):
         return self.future.result()
 
     def send_gpt_request(self, user_input):
+        """
+        Send a request to the gpt_request service server.
+
+        :param user_input: String to specifiy the message sent to GPT.
+        """
+        
         request = GPTRequest.Request()
         request.user_input = user_input
+
         self.future = self.gpt_request_cli.call_async(request)
         rclpy.spin_until_future_complete(self, self.future)
+
         return self.future.result()
 
     def send_speak_request(self, gpt_response):
+        """
+        Send a request to the speak service server.
+        :param message: String to specify the text to be spoken.
+        """
+        
         request = SetSpeech.Request()
         request.message = gpt_response
 
         self.future = self.speak_cli.call_async(request)
-
         rclpy.spin_until_future_complete(self, self.future)
 
         return self.future.result()
 
     def send_recognize_speech_request(self):
+        """
+        Send a request to the recognize_speech service server.
+        """
+        
         request = RecognizeSpeech.Request()
+
         self.future = self.recognize_speech_cli.call_async(request)
         rclpy.spin_until_future_complete(self, self.future)
+        
         return self.future.result()
     
     def send_change_voice_alteration_request(self, voice_alteration):
@@ -117,6 +137,9 @@ class Interaction(Node):
 
 
     def interaction(self):
+        """
+        Main interaction.
+        """
 
         self.set_up_logger()
 
