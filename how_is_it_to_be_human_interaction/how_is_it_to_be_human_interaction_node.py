@@ -108,8 +108,8 @@ class Interaction(Node):
         request.is_voice_altered = voice_alteration
 
         self.future = self.change_voice_alteration_cli.call_async(request)
-
         rclpy.spin_until_future_complete(self, self.future)
+
         return self.future.result()
     
     def send_get_gpt_request_params_request(self):
