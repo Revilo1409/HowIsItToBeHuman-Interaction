@@ -73,7 +73,7 @@ class Interaction(Node):
     def send_speak_request(self, gpt_response):
         """
         Send a request to the speak service server.
-        
+
         :param message: String to specify the text to be spoken.
         """
         
@@ -98,7 +98,12 @@ class Interaction(Node):
         return self.future.result()
     
     def send_change_voice_alteration_request(self, voice_alteration):
+        """
+        Send a request to the change_voice_alteration service server.
 
+        :param voice_alteration: Boolean to set the voice alteration.
+        """
+        
         request = SetVoiceAlteration.Request()
         request.is_voice_altered = voice_alteration
 
