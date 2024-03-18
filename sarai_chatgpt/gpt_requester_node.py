@@ -86,6 +86,9 @@ class GPTRequester(Node):
         )
 
         # TODO: Catch error from GPT response
+
+        # By default, the API request creates one answer, but multiple could also
+        # be given. We only create one.
         chatgpt_response = chat.choices[0].message.content
         response.chatgpt_response = chatgpt_response
         response.success = True
