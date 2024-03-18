@@ -33,6 +33,8 @@ class Interaction(Node):
         # Create client to get parameters of gpt_requester
         self.get_gpt_request_params_cli = self.create_client(GetGPTRequestParams, 'get_gpt_request_params')
 
+        self.set_up_logger()
+
         for client in [self.gpt_request_cli, self.speak_cli, self.recognize_speech_cli, 
                        self.display_emotion_cli, self.change_voice_alteration_cli, 
                        self.get_gpt_request_params_cli]:
@@ -125,28 +127,35 @@ class Interaction(Node):
         return self.future.result()
 
     def set_up_logger(self):
-         
+        """
+        Setting up the logger so its ready to use for logging into a file.
+        """
         filename = "chat.log"
 
         self.logger = logging.getLogger()
+
+        # Sets the logging level to INFO
         self.logger.setLevel(logging.INFO)
+
+        # Formatter that puts just the given message into the log
         formatter = logging.Formatter("%(message)s")
 
+        # Creates a RotatingFileHandler, that handles log file creation for 
+        # every new conversation
         handler = logging.handlers.RotatingFileHandler(filename, mode = 'w', backupCount=10)
         handler.setLevel(logging.INFO)
         handler.setFormatter(formatter)
+
+        # Does the rollover for the log file, so for every new conversation, 
+        # a new log file is created.
         logging.handlers.RotatingFileHandler.doRollover(handler)
+        
         self.logger.addHandler(handler)
-
-
-
 
     def interaction(self):
         """
         Main interaction.
         """
-
-        self.set_up_logger()
 
         gpt_params = self.send_get_gpt_request_params_request()
         gpt_params_string = f"ChatGPT persona: {gpt_params.chatgpt_persona} \n" 
