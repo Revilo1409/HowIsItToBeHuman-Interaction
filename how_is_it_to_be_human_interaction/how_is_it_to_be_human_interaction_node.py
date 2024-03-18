@@ -1,5 +1,4 @@
 import rclpy
-import ros2param
 from rclpy.node import Node
 from rclpy.parameter import Parameter
 
@@ -8,8 +7,11 @@ from sarai_msgs.srv import SetSpeech, GPTRequest, RecognizeSpeech, SetVoiceAlter
 from pixelbot_msgs.srv import DisplayEmotion
 
 import logging, logging.handlers
+import time, statistics
 
 class Interaction(Node):
+    response_time = []
+
     def __init__(self):
         super().__init__("how_is_it_to_be_human_interaction_node")
 
@@ -139,12 +141,28 @@ class Interaction(Node):
                 message = response.recognized_speech
                 success = response.success
             except KeyboardInterrupt:
+                if len(self.response_time > 0):
+                    average_response_time = sum(self.response_time) / len(self.response_time)
+                    standard_deviation = statistics.stdev(self.response_time)
+                    self.logger.info("---")
+                    self.logger.info(f"Average reponse time: {average_response_time}")
+                    self.logger.info(f"Standard Deviaton of response time: {standard_deviation}")
                 break
             if success:
                 self.logger.info(f"User: {message}")
                 print(f"The PC understood this:{message}")
+                
+                # Measuring the response time of the request
+                start = time.time()
                 gpt_response = self.send_gpt_request(message)
+                end = time.time()
+                response_time = end - start
+                self.response_time.append(response_time)
+
+                # Logging the response time and message
+                self.logger.info(f"Response time: {response_time}")
                 self.logger.info(f"Robot: {gpt_response.chatgpt_response}")
+
                 print(f"GPT: {gpt_response.chatgpt_response}")
                 self.send_speak_request(gpt_response.chatgpt_response)
             else:
