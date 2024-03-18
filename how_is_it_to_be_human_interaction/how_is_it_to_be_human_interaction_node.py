@@ -184,7 +184,7 @@ class Interaction(Node):
                 success = response.success
             except KeyboardInterrupt:
                 if len(self.response_time) > 0:
-                    average_response_time = sum(self.response_time) / len(self.response_time)
+                    average_response_time = statistics.mean(self.response_time)
                     standard_deviation = statistics.stdev(self.response_time)
                     self.logger.info("---")
                     self.logger.info(f"Average reponse time: {average_response_time}")
