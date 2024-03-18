@@ -115,7 +115,6 @@ class Interaction(Node):
     def send_get_gpt_request_params_request(self):
         """
         Sends a request to the get_gpt_request_params service server.
-
         """
 
         request = GetGPTRequestParams.Request()
