@@ -73,6 +73,7 @@ class Interaction(Node):
     def send_speak_request(self, gpt_response):
         """
         Send a request to the speak service server.
+        
         :param message: String to specify the text to be spoken.
         """
         
