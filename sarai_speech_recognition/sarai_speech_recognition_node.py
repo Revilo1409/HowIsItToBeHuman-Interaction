@@ -65,13 +65,5 @@ def main(args=None):
     rclpy.shutdown()
 
 
-"""
-    nodee = Sarai_Speech_Recognition()
-    request = RecognizeSpeech.Request
-    response = RecognizeSpeech.Response
-    while True:
-        nodee.recognize_speech_callback(request, response)"""
-
-
 if __name__ == "__main__":
     main()
