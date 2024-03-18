@@ -33,7 +33,9 @@ class Interaction(Node):
         # Create client to get parameters of gpt_requester
         self.get_gpt_request_params_cli = self.create_client(GetGPTRequestParams, 'get_gpt_request_params')
 
-        for client in [self.gpt_request_cli, self.speak_cli, self.recognize_speech_cli]:
+        for client in [self.gpt_request_cli, self.speak_cli, self.recognize_speech_cli, 
+                       self.display_emotion_cli, self.change_voice_alteration_cli, 
+                       self.get_gpt_request_params_cli]:
             while not client.wait_for_service(timeout_sec=1.0):
                 self.get_logger().info(f'{client.srv_name} service not available, waiting again...')
 
