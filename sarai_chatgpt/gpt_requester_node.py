@@ -5,7 +5,7 @@ from rcl_interfaces.msg import ParameterDescriptor
 
 from std_srvs.srv import Empty
 
-from sarai_msgs.srv import GPTRequest
+from sarai_msgs.srv import GPTRequest, GetGPTRequestParams
 
 from openai import OpenAI
 import os
@@ -35,6 +35,9 @@ class GPTRequester(Node):
         # Descriptor for api_key parameter
         api_key_descriptor = ParameterDescriptor(description="API Key for ChatGPT API")
 
+        # Descriptor for the temperature parameter
+        temperature_descriptor = ParameterDescriptor(description="The temperature used in the ChatGPT API request")
+
         # Parameter for setting the role of ChatGPT
         default_chatgpt_persona = """You are now a social robot with an actual robot 
                  body, who will have open conversations with humans on 
@@ -43,11 +46,13 @@ class GPTRequester(Node):
                  going nowhere, you have to provide something new to the topic.
                  You have some fundamental philosophical knowledge. Your 
                  responses have a maximum length of ca. 20 words."""
-        
         self.declare_parameter("chatgpt_persona", default_chatgpt_persona, chatgpt_persona_descriptor,)
 
         # Parameter for setting the maximum number of messages in the history that should be sent to GPT
         self.declare_parameter("max_window_messages", 100, max_window_messages_descriptor)
+        
+        # Parameter for setting the temperature in the ChatGPT API request
+        self.declare_parameter("temperature", 0.7, temperature_descriptor)
 
         # TODO: ADD THIS IN README --> API Key for ChatGPT API
         # You must add OPENAI_API_KEY as an environment variable
@@ -58,6 +63,8 @@ class GPTRequester(Node):
         # Creating client for communicating with GPT API
         self.gpt_client = OpenAI(api_key=self.get_parameter("api_key").get_parameter_value().string_value)
 
+        # Creating a client for getting the 
+
     def gpt_request_callback(self, request, response):
         """
         Service handler performing a request to the GPT API
@@ -67,7 +74,7 @@ class GPTRequester(Node):
         """
 
          # Value between 0 and 1. Used to set the creativity of ChatGPTs answers
-        temperature = 0.7
+        temperature = self.get_parameter("temperature").get_parameter_value()._double_value
 
         user_input_message = {"role": "user", "content": request.user_input}
         
