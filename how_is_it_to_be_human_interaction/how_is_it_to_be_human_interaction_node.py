@@ -183,7 +183,7 @@ class Interaction(Node):
                 message = response.recognized_speech
                 success = response.success
             except KeyboardInterrupt:
-                if len(self.response_time) > 0:
+                if self.response_time:
                     average_response_time = statistics.mean(self.response_time)
                     standard_deviation = statistics.stdev(self.response_time)
                     self.logger.info("---")
