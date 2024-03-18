@@ -1,7 +1,9 @@
 import rclpy
+import ros2param
 from rclpy.node import Node
+from rclpy.parameter import Parameter
 
-from sarai_msgs.srv import SetSpeech, GPTRequest, RecognizeSpeech, SetVoiceAlteration
+from sarai_msgs.srv import SetSpeech, GPTRequest, RecognizeSpeech, SetVoiceAlteration, GetGPTRequestParams
 
 from pixelbot_msgs.srv import DisplayEmotion
 
@@ -22,6 +24,9 @@ class Interaction(Node):
 
         # Create a client for setting the voice alteration
         self.change_voice_alteration_cli = self.create_client(SetVoiceAlteration, 'change_voice_alteration')
+
+        # Create client to get parameters of gpt_requester
+        self.get_gpt_request_params_cli = self.create_client(GetGPTRequestParams, 'get_gpt_request_params')
 
         while not self.gpt_request_cli.wait_for_service(timeout_sec=1.0):
             self.get_logger().info(
@@ -76,8 +81,24 @@ class Interaction(Node):
 
         rclpy.spin_until_future_complete(self, self.future)
         return self.future.result()
+    
+    def send_get_gpt_request_params_request(self):
+        """
+        Sends a request to the get_gpt_request_params service server.
+
+        """
+
+        request = GetGPTRequestParams.Request()
+
+        self.future = self.get_gpt_request_params_cli.call_async(request)
+        rclpy.spin_until_future_complete(self, self.future)
+        
+        return self.future.result()
 
     def interaction(self):
+
+        gpt_params = self.send_get_gpt_request_params_request()
+        self.get_logger().info(gpt_params.chatgpt_persona)
         
         self.send_change_voice_alteration_request(False)
 
