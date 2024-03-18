@@ -22,9 +22,7 @@ class Interaction(Node):
         self.speak_cli = self.create_client(SetSpeech, "speak")
 
         # Create client to recognize speech
-        self.recognize_speech_cli = self.create_client(
-            RecognizeSpeech, "recognize_speech"
-        )
+        self.recognize_speech_cli = self.create_client(RecognizeSpeech, "recognize_speech")
 
         # Create client to perform emotion
         self.display_emotion_cli = self.create_client(DisplayEmotion, 'display_emotion')
