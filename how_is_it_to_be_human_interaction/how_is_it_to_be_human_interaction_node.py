@@ -26,6 +26,7 @@ class Interaction(Node):
 
         :param user_input: String to specifiy the message sent to GPT.
         """
+        
         request = GPTRequest.Request()
         request.user_input = user_input
 
