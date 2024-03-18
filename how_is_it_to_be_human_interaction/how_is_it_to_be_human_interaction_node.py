@@ -10,9 +10,8 @@ import logging, logging.handlers
 import time, statistics
 
 class Interaction(Node):
-    response_time = []
 
-    def __init__(self):
+    def __init__(self):    
         super().__init__("how_is_it_to_be_human_interaction_node")
 
         # Create client to send a request to ChatGPT
@@ -33,13 +32,16 @@ class Interaction(Node):
         # Create client to get parameters of gpt_requester
         self.get_gpt_request_params_cli = self.create_client(GetGPTRequestParams, 'get_gpt_request_params')
 
-        self.set_up_logger()
-
         for client in [self.gpt_request_cli, self.speak_cli, self.recognize_speech_cli, 
                        self.display_emotion_cli, self.change_voice_alteration_cli, 
                        self.get_gpt_request_params_cli]:
             while not client.wait_for_service(timeout_sec=1.0):
                 self.get_logger().info(f'{client.srv_name} service not available, waiting again...')
+
+        # List of response times, needed for test purposes.
+        self.response_times = []
+
+        self.set_up_logger()
 
     def send_display_emotion_request(self, desired_emotion):
         """
