@@ -158,13 +158,16 @@ class Interaction(Node):
         """
         Main interaction.
         """
-
+        
+        # Sends a request to get the parameter values of the GPTRequest node.
+        # And then put all the parameters at the beginning of the log file.
         gpt_params = self.send_get_gpt_request_params_request()
         gpt_params_string = f"ChatGPT persona: {gpt_params.chatgpt_persona} \n" 
         gpt_params_string += f"Temperature: {gpt_params.temperature}\n"
         gpt_params_string += f"Max Window of last messages: {gpt_params.max_window_messages}\n ---"
         self.logger.info(gpt_params_string)
 
+        # Sets the voice alteration to False.
         self.send_change_voice_alteration_request(False)
 
         # Empty input for starting the conversation with ChatGPT
