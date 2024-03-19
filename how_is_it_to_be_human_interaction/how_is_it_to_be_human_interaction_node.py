@@ -190,9 +190,9 @@ class Interaction(Node):
                 success = response.success
             except KeyboardInterrupt:
                 # If at least one response time is given
-                if self.response_time:
-                    average_response_time = statistics.mean(self.response_time)
-                    standard_deviation = statistics.stdev(self.response_time)
+                if self.response_times:
+                    average_response_time = statistics.mean(self.response_times)
+                    standard_deviation = statistics.stdev(self.response_times)
                     self.logger.info("---")
                     self.logger.info(f"Average reponse time: {average_response_time}")
                     self.logger.info(f"Standard Deviaton of response time: {standard_deviation}")
@@ -209,7 +209,7 @@ class Interaction(Node):
                 gpt_response = self.send_gpt_request(message)
                 end = time.time()
                 response_time = end - start
-                self.response_time.append(response_time)
+                self.response_times.append(response_time)
 
                 # Logging the response time and message
                 self.logger.info(f"Response time: {response_time}")
