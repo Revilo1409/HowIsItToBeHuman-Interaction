@@ -75,13 +75,15 @@ class GPTRequester(Node):
         temperature = self.get_parameter("temperature").get_parameter_value()._double_value
         
         messages = []
+
+        # If the conversation wasn't started yet, only put the persona message 
+        # into the messages.
         if not self.conversation_started:
             self.conversation_started = True
             messages = [self.get_chatgpt_persona_message()]
         else:
             user_input_message = {"role": "user", "content": request.user_input}
             messages = self.get_max_window_messages(user_input_message)
-
 
         chat = self.gpt_client.chat.completions.create(
             model=self.MODEL,
