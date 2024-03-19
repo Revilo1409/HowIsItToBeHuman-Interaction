@@ -15,7 +15,7 @@ setup(
     zip_safe=True,
     maintainer='maure',
     maintainer_email='romain.maure21@gmail.com',
-    description='Package allowing any robot with a microphone to regonize speech',
+    description='Package allowing any robot with a microphone to recognize speech',
     license='Apache-2.0',
     tests_require=['pytest'],
     entry_points={
