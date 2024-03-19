@@ -29,17 +29,20 @@ class GPTRequester(Node):
         # Service for getting the necessary independant variables from the parameters
         self.get_gpt_request_params_srv = self.create_service(GetGPTRequestParams, "get_gpt_request_params", self.get_gpt_request_params_callback)
 
+        # Descriptor for api_key parameter
+        api_key_descriptor = ParameterDescriptor(description="API Key for ChatGPT API")
+
         # Descriptor for role parameter
         chatgpt_persona_descriptor = ParameterDescriptor(description="This is a parameter for setting the role of ChatGPT")
 
         # Descriptor for maxWindow_messages parameter
         max_window_messages_descriptor = ParameterDescriptor(description="Max number of messages stored in the message history")
 
-        # Descriptor for api_key parameter
-        api_key_descriptor = ParameterDescriptor(description="API Key for ChatGPT API")
-
         # Descriptor for the temperature parameter
         temperature_descriptor = ParameterDescriptor(description="The temperature used in the ChatGPT API request")
+
+        # Get the API key from the environment variable.
+        self.declare_parameter("api_key", os.getenv("OPENAI_API_KEY"), api_key_descriptor)
 
         # Parameter for setting the role of ChatGPT
         default_chatgpt_persona = """You are now a social robot with an actual robot 
@@ -56,12 +59,6 @@ class GPTRequester(Node):
         
         # Parameter for setting the temperature in the ChatGPT API request
         self.declare_parameter("temperature", 0.7, temperature_descriptor)
-
-        # TODO: ADD THIS IN README --> API Key for ChatGPT API
-        # You must add OPENAI_API_KEY as an environment variable
-        # In Ubuntu: echo 'export OPENAI_API_KEY=your_api_key' >> ~/.bashrc
-        # Get the API key from the environment variable.
-        self.declare_parameter("api_key", os.getenv("OPENAI_API_KEY"), api_key_descriptor)
 
         # Creating client for communicating with GPT API
         self.gpt_client = OpenAI(api_key=self.get_parameter("api_key").get_parameter_value().string_value)
