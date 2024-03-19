@@ -45,6 +45,16 @@ class Interaction(Node):
 
         self.set_up_logger()
 
+    def __del__(self):
+    # On deletion of the class, calculate the mean and standard deviation and 
+    # append it to the log file
+        self.logger.info("---")
+        if len(self.response_times) > 1:
+            mean_response_time = statistics.mean(self.response_times)
+            standard_deviation = statistics.stdev(self.response_times)
+            self.logger.info(f"Mean response time: {mean_response_time}")
+            self.logger.info(f"Standard deviaton of response time: {standard_deviation}")
+
     def send_display_emotion_request(self, desired_emotion):
         """
         Send a request to the display_emotion service server.
@@ -135,8 +145,6 @@ class Interaction(Node):
         """
         Setting up the logger so its ready to use for logging into a file.
         """
-        
-        filename = "chat.log"
 
         self.logger = logging.getLogger()
 
@@ -146,15 +154,12 @@ class Interaction(Node):
         # Formatter that puts just the given message into the log
         formatter = logging.Formatter("%(message)s")
 
-        # Creates a RotatingFileHandler, that handles log file creation for 
-        # every new conversation
-        handler = logging.handlers.RotatingFileHandler(filename, mode = 'w', backupCount=10)
+        # Creates a FileHandler, that handles log file creation for 
+        # every new conversation, using the timestamp as a name
+        filename = time.strftime("%d_%m_%Y__%H.%M.%S.log")
+        handler = logging.FileHandler(filename)
         handler.setLevel(logging.INFO)
         handler.setFormatter(formatter)
-
-        # Does the rollover for the log file, so for every new conversation, 
-        # a new log file is created.
-        logging.handlers.RotatingFileHandler.doRollover(handler)
         
         self.logger.addHandler(handler)
 
