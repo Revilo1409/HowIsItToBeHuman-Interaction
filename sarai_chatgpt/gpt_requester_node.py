@@ -151,8 +151,8 @@ class GPTRequester(Node):
         response.chatgpt_persona = self.get_parameter("chatgpt_persona").get_parameter_value().string_value
         response.temperature = self.get_parameter("temperature").get_parameter_value()._double_value
         response.max_window_messages = self.get_parameter("max_window_messages").get_parameter_value().integer_value
-        return response
 
+        return response
 
 def main(args=None):
     rclpy.init(args=args)
@@ -163,7 +163,6 @@ def main(args=None):
 
     gpt_requester_node.destroy_node()
     rclpy.shutdown()
-
 
 if __name__ == "__main__":
     main()
