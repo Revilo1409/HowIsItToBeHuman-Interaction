@@ -32,6 +32,7 @@ class Interaction(Node):
         # Create client to get parameters of gpt_requester
         self.get_gpt_request_params_cli = self.create_client(GetGPTRequestParams, 'get_gpt_request_params')
 
+        # Wait for clients to be ready
         for client in [self.gpt_request_cli, self.speak_cli, self.recognize_speech_cli, 
                        self.display_emotion_cli, self.change_voice_alteration_cli, 
                        self.get_gpt_request_params_cli]:
@@ -78,7 +79,7 @@ class Interaction(Node):
         """
         Send a request to the speak service server.
 
-        :param message: String to specify the text to be spoken.
+        :param gpt_response: String to specify the text to be spoken.
         """
         
         request = SetSpeech.Request()
@@ -175,7 +176,10 @@ class Interaction(Node):
         self.logger.info(f"Robot: {gpt_response.chatgpt_response}")
         self.send_speak_request(gpt_response.chatgpt_response)
 
+        # While Loop for conversation flow
         while True:
+
+            # Trying to recognize user speech input
             try:
                 print("Trying to recognize speech")
                 response = self.send_recognize_speech_request()
@@ -183,6 +187,7 @@ class Interaction(Node):
                 message = response.recognized_speech
                 success = response.success
             except KeyboardInterrupt:
+                # If at least one response time is given
                 if self.response_time:
                     average_response_time = statistics.mean(self.response_time)
                     standard_deviation = statistics.stdev(self.response_time)
@@ -190,6 +195,9 @@ class Interaction(Node):
                     self.logger.info(f"Average reponse time: {average_response_time}")
                     self.logger.info(f"Standard Deviaton of response time: {standard_deviation}")
                 break
+
+            # If successfully recognized speech input --> Send a request to ChatGPT
+            # and use TTS for ChatGPTs response
             if success:
                 self.logger.info(f"User: {message}")
                 print(f"The PC understood this:{message}")
@@ -208,12 +216,9 @@ class Interaction(Node):
                 print(f"GPT: {gpt_response.chatgpt_response}")
                 self.send_speak_request(gpt_response.chatgpt_response)
             else:
-                self.send_speak_request(
-                    "Sorry, I did not understand you. Can you please repeat what you said?"
-                )
+                self.send_speak_request("Sorry, I did not understand you. Can you please repeat what you said?")
                 print("Message finished.")
         print("\nClosing GPTClient...")
-
 
 def main():
     rclpy.init()
@@ -224,7 +229,6 @@ def main():
 
     interaction_node.destroy_node()
     rclpy.shutdown()
-
 
 if __name__ == "__main__":
     main()
