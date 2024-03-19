@@ -73,14 +73,13 @@ class GPTRequester(Node):
 
          # Value between 0 and 1. Used to set the creativity of ChatGPTs answers
         temperature = self.get_parameter("temperature").get_parameter_value()._double_value
-       
-        user_input_message = {"role": "user", "content": request.user_input}
         
         messages = []
         if not self.conversation_started:
             self.conversation_started = True
             messages = [self.get_chatgpt_persona_message()]
         else:
+            user_input_message = {"role": "user", "content": request.user_input}
             messages = self.get_max_window_messages(user_input_message)
 
 
