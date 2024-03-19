@@ -65,7 +65,7 @@ class GPTRequester(Node):
 
     def gpt_request_callback(self, request, response):
         """
-        Service handler performing a request to the GPT API
+        Service handler performing a request to the OpenAI API
 
         :param request: See GPTRequest service definition.
         :param response: See GPTRequest service definition
