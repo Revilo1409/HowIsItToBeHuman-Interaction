@@ -135,6 +135,7 @@ class Interaction(Node):
         """
         Setting up the logger so its ready to use for logging into a file.
         """
+        
         filename = "chat.log"
 
         self.logger = logging.getLogger()
