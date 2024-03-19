@@ -178,48 +178,50 @@ class Interaction(Node):
         self.logger.info(f"Robot: {gpt_response.chatgpt_response}")
         self.send_speak_request(gpt_response.chatgpt_response)
 
-        # While Loop for conversation flow
-        while True:
+        try:
 
-            # Trying to recognize user speech input
-            try:
+        # While Loop for conversation flow
+            while True:
+
+                # Trying to recognize user speech input
                 print("Trying to recognize speech")
                 response = self.send_recognize_speech_request()
                 self.send_display_emotion_request("surprise")
                 message = response.recognized_speech
                 success = response.success
-            except KeyboardInterrupt:
-                # If at least one response time is given
-                if self.response_times:
-                    average_response_time = statistics.mean(self.response_times)
-                    standard_deviation = statistics.stdev(self.response_times)
-                    self.logger.info("---")
-                    self.logger.info(f"Average reponse time: {average_response_time}")
-                    self.logger.info(f"Standard Deviaton of response time: {standard_deviation}")
-                break
-
-            # If successfully recognized speech input --> Send a request to ChatGPT
-            # and use TTS for ChatGPTs response
-            if success:
-                self.logger.info(f"User: {message}")
-                print(f"The PC understood this:{message}")
                 
-                # Measuring the response time of the request
-                start = time.time()
-                gpt_response = self.send_gpt_request(message)
-                end = time.time()
-                response_time = end - start
-                self.response_times.append(response_time)
+                # If successfully recognized speech input --> Send a request to ChatGPT
+                # and use TTS for ChatGPTs response
+                if success:
+                    self.logger.info(f"User: {message}")
+                    print(f"The PC understood this:{message}")
+                    
+                    # Measuring the response time of the request
+                    start = time.time()
+                    gpt_response = self.send_gpt_request(message)
+                    end = time.time()
+                    response_time = end - start
+                    self.response_times.append(response_time)
 
-                # Logging the response time and message
-                self.logger.info(f"Response time: {response_time}")
-                self.logger.info(f"Robot: {gpt_response.chatgpt_response}")
+                    # Logging the response time and message
+                    self.logger.info(f"Response time: {response_time}")
+                    self.logger.info(f"Robot: {gpt_response.chatgpt_response}")
 
-                print(f"GPT: {gpt_response.chatgpt_response}")
-                self.send_speak_request(gpt_response.chatgpt_response)
-            else:
-                self.send_speak_request("Sorry, I did not understand you. Can you please repeat what you said?")
-                print("Message finished.")
+                    print(f"GPT: {gpt_response.chatgpt_response}")
+                    self.send_speak_request(gpt_response.chatgpt_response)
+                else:
+                    self.send_speak_request("Sorry, I did not understand you. Can you please repeat what you said?")
+                    print("Message finished.")
+
+        except KeyboardInterrupt:
+            # If at least one response time is given
+            if self.response_times:
+                average_response_time = statistics.mean(self.response_times)
+                standard_deviation = statistics.stdev(self.response_times)
+                self.logger.info("---")
+                self.logger.info(f"Mean response time: {average_response_time}")
+                self.logger.info(f"Standard deviaton of response time: {standard_deviation}")
+
         print("\nClosing GPTClient...")
 
 
