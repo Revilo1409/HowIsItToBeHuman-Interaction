@@ -99,6 +99,7 @@ class GPTRequester(Node):
         response.chatgpt_response = chatgpt_response
         response.success = True
 
+        # TODO: Only append, if the user_input isn't empty!
         self.message_history.append(user_input_message)
         self.message_history.append({"role": "assistant", "content": chatgpt_response})
 
