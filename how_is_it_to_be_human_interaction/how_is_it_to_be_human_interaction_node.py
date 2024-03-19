@@ -9,6 +9,7 @@ from pixelbot_msgs.srv import DisplayEmotion
 import logging, logging.handlers
 import time, statistics
 
+
 class Interaction(Node):
 
     def __init__(self):    
@@ -221,6 +222,7 @@ class Interaction(Node):
                 print("Message finished.")
         print("\nClosing GPTClient...")
 
+
 def main():
     rclpy.init()
 
@@ -230,6 +232,7 @@ def main():
 
     interaction_node.destroy_node()
     rclpy.shutdown()
+
 
 if __name__ == "__main__":
     main()
