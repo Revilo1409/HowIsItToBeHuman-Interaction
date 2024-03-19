@@ -5,6 +5,8 @@ from sarai_msgs.srv import RecognizeSpeech
 
 import speech_recognition as sr
 
+# Removes all unnecessary error prints
+import sounddevice
 
 class Sarai_Speech_Recognition(Node):
 
