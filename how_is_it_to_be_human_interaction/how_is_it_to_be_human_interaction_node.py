@@ -60,7 +60,7 @@ class Interaction(Node):
 
         return self.future.result()
 
-    def send_gpt_request(self, user_input):
+    def send_gpt_request(self, user_input=None):
         """
         Send a request to the gpt_request service server.
 
@@ -68,7 +68,8 @@ class Interaction(Node):
         """
         
         request = GPTRequest.Request()
-        request.user_input = user_input
+        if user_input:
+            request.user_input = user_input
 
         self.future = self.gpt_request_cli.call_async(request)
         rclpy.spin_until_future_complete(self, self.future)
@@ -172,7 +173,7 @@ class Interaction(Node):
         self.send_change_voice_alteration_request(False)
 
         # Empty input for starting the conversation with ChatGPT
-        gpt_response = self.send_gpt_request("")
+        gpt_response = self.send_gpt_request()
         self.logger.info(f"Robot: {gpt_response.chatgpt_response}")
         self.send_speak_request(gpt_response.chatgpt_response)
 
