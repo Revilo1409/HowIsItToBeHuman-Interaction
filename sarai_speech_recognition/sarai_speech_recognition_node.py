@@ -25,6 +25,10 @@ class Sarai_Speech_Recognition(Node):
             # SpeechRecognition won't work after a few times
             self.speech_recognizer.dynamic_energy_threshold = False
 
+            # Seconds of non speaking audio before the speaking audio is considered a phrase
+            # Standard is 0.8
+            self.speech_recognizer.pause_threshold = 1.5
+
     def recognize_speech_callback(self, request, response):
         """
         Service handler performing the speech recognition
