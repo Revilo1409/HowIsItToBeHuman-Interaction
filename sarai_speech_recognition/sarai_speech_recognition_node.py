@@ -4,7 +4,7 @@ from rclpy.node import Node
 from sarai_msgs.srv import RecognizeSpeech
 
 import speech_recognition as sr
-
+import time
 
 class Sarai_Speech_Recognition(Node):
 
@@ -32,13 +32,12 @@ class Sarai_Speech_Recognition(Node):
         :param request: See RecognizeSpeech service definition.
         :param response: See RecognizeSpeech service definition.
         """
-
         # Setting up microphone for Speech Recognition
         with sr.Microphone() as source:
-            print(f"Energy threshold: {self.speech_recognizer.energy_threshold}")
-            print("Say something!")
+            start = time.time()
             self.audio = self.speech_recognizer.listen(source, None)
-            print("Said something")
+            end = time.time()
+            response.processing_time = end - start
 
         try:
             response.recognized_speech = self.speech_recognizer.recognize_google(self.audio)
