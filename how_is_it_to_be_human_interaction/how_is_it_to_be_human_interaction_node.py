@@ -52,10 +52,15 @@ class Interaction(Node):
     # append it to the log file
         self.logger.info("---")
         if len(self.response_times) > 1:
+            mean_speech_processing_time = statistics.mean(self.speech_processing_times)
+            standard_deviation_speech_processing_time = statistics.stdev(self.speech_processing_times)
+            self.logger.info(f"Speech Recognition processing time:\nMean: {mean_speech_processing_time}s")
+            self.logger.info(f"Standard deviation: {standard_deviation_speech_processing_time}s")
+
             mean_response_time = statistics.mean(self.response_times)
-            standard_deviation = statistics.stdev(self.response_times)
-            self.logger.info(f"Mean response time: {mean_response_time}")
-            self.logger.info(f"Standard deviaton of response time: {standard_deviation}")
+            standard_deviation_response_time = statistics.stdev(self.response_times)
+            self.logger.info(f"\nChatGPT API response time: \nMean: {mean_response_time}s")
+            self.logger.info(f"Standard deviaton: {standard_deviation_response_time}s")
 
     def send_display_emotion_request(self, desired_emotion):
         """
@@ -207,8 +212,7 @@ class Interaction(Node):
                 response_time = end - start
                 self.response_times.append(response_time)
 
-                # Logging the response time and message
-                self.logger.info(f"Response time: {response_time}")
+                # Logging ChatGPTs response
                 self.logger.info(f"Robot: {gpt_response.chatgpt_response}")
 
                 self.send_speak_request(gpt_response.chatgpt_response)
