@@ -187,7 +187,6 @@ class Interaction(Node):
         while True:
 
             # Trying to recognize user speech input
-            print("Trying to recognize speech")
             response = self.send_recognize_speech_request()
             self.send_display_emotion_request("surprise")
             message = response.recognized_speech
@@ -197,7 +196,6 @@ class Interaction(Node):
             # and use TTS for ChatGPTs response
             if success:
                 self.logger.info(f"User: {message}")
-                print(f"The PC understood this:{message}")
                 
                 # Measuring the response time of the request
                 start = time.time()
@@ -210,13 +208,9 @@ class Interaction(Node):
                 self.logger.info(f"Response time: {response_time}")
                 self.logger.info(f"Robot: {gpt_response.chatgpt_response}")
 
-                print(f"GPT: {gpt_response.chatgpt_response}")
                 self.send_speak_request(gpt_response.chatgpt_response)
             else:
                 self.send_speak_request("Sorry, I did not understand you. Can you please repeat what you said?")
-                print("Message finished.")
-
-        print("\nClosing GPTClient...")
 
 
 def main():
