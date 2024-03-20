@@ -52,13 +52,17 @@ class Interaction(Node):
     # append it to the log file
         self.logger.info("---")
         if len(self.response_times) > 1:
-            mean_speech_processing_time = statistics.mean(self.speech_processing_times)
-            standard_deviation_speech_processing_time = statistics.stdev(self.speech_processing_times)
+            # Calculating mean and standard deviation of the speech processing time
+            # and also round the result to 3 decimal points
+            mean_speech_processing_time = round(statistics.mean(self.speech_processing_times), 3)
+            standard_deviation_speech_processing_time = round(statistics.stdev(self.speech_processing_times),3)
             self.logger.info(f"Speech Recognition processing time:\nMean: {mean_speech_processing_time}s")
             self.logger.info(f"Standard deviation: {standard_deviation_speech_processing_time}s")
 
-            mean_response_time = statistics.mean(self.response_times)
-            standard_deviation_response_time = statistics.stdev(self.response_times)
+            # Calculating mean and standard deviation of ChatGPTs response time
+            # and also round the result to 3 decimal points
+            mean_response_time = round(statistics.mean(self.response_times), 3)
+            standard_deviation_response_time = round(statistics.stdev(self.response_times), 3)
             self.logger.info(f"\nChatGPT API response time: \nMean: {mean_response_time}s")
             self.logger.info(f"Standard deviaton: {standard_deviation_response_time}s")
 
