@@ -40,10 +40,10 @@ class Interaction(Node):
             while not client.wait_for_service(timeout_sec=1.0):
                 self.get_logger().info(f'{client.srv_name} service not available, waiting again...')
 
-        # List of response times, needed for test purposes.
+        # Lists of response and processing times, needed for logging purposes.
         self.response_times = []
-
         self.speech_processing_times = []
+        self.tts_processing_times = []
 
         self.set_up_logger()
 
@@ -219,9 +219,11 @@ class Interaction(Node):
                 # Logging ChatGPTs response
                 self.logger.info(f"Robot: {gpt_response.chatgpt_response}")
 
-                self.send_speak_request(gpt_response.chatgpt_response)
+                tts_response = self.send_speak_request(gpt_response.chatgpt_response)
+                self.tts_processing_times.append(tts_response.processing_time)
             else:
-                self.send_speak_request("Sorry, I did not understand you. Can you please repeat what you said?")
+                tts_response = self.send_speak_request("Sorry, I did not understand you. Can you please repeat what you said?")
+                self.tts_processing_times.append(tts_response.processing_time)
 
 
 def main():
