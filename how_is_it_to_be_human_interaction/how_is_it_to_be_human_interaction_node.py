@@ -174,7 +174,7 @@ class Interaction(Node):
         # Creates a FileHandler, that handles log file creation for 
         # every new conversation, using the timestamp as a name
         filename = time.strftime("%d_%m_%Y__%H.%M.%S.log")
-        handler = logging.FileHandler(filename)
+        handler = logging.FileHandler(f"./thesis_logs/{filename}")
         handler.setLevel(logging.INFO)
         handler.setFormatter(formatter)
         
