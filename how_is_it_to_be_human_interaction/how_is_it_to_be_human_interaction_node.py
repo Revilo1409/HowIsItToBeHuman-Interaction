@@ -43,6 +43,8 @@ class Interaction(Node):
         # List of response times, needed for test purposes.
         self.response_times = []
 
+        self.speech_processing_times = []
+
         self.set_up_logger()
 
     def __del__(self):
@@ -187,14 +189,15 @@ class Interaction(Node):
         while True:
 
             # Trying to recognize user speech input
-            response = self.send_recognize_speech_request()
+            speech_response = self.send_recognize_speech_request()
             self.send_display_emotion_request("surprise")
-            message = response.recognized_speech
-            success = response.success
+            message = speech_response.recognized_speech
+            success = speech_response.success
             
             # If successfully recognized speech input --> Send a request to ChatGPT
             # and use TTS for ChatGPTs response
             if success:
+                self.speech_processing_times.append(speech_response.processing_time)
                 self.logger.info(f"User: {message}")
                 
                 # Measuring the response time of the request
