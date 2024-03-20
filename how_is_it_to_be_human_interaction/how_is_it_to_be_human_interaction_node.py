@@ -40,10 +40,10 @@ class Interaction(Node):
             while not client.wait_for_service(timeout_sec=1.0):
                 self.get_logger().info(f'{client.srv_name} service not available, waiting again...')
 
-        # List of response times, needed for test purposes.
+        # Lists of response and processing times, needed for logging purposes.
         self.response_times = []
-
         self.speech_processing_times = []
+        self.tts_processing_times = []
 
         self.set_up_logger()
 
@@ -65,6 +65,12 @@ class Interaction(Node):
             standard_deviation_response_time = round(statistics.stdev(self.response_times), 3)
             self.logger.info(f"\nChatGPT API response time: \nMean: {mean_response_time}s")
             self.logger.info(f"Standard deviaton: {standard_deviation_response_time}s")
+
+            # Calculating mean and standard deviation of TTS processing time
+            mean_tts_processing_time = statistics.mean(self.tts_processing_times)
+            standard_deviation_tts_processing_time = statistics.stdev(self.tts_processing_times)
+            self.logger.info(f"\nTTS processing time: \nMean: {mean_tts_processing_time}s")
+            self.logger.info(f"Standard deviaton: {standard_deviation_tts_processing_time}s")
 
     def send_display_emotion_request(self, desired_emotion):
         """
@@ -219,9 +225,12 @@ class Interaction(Node):
                 # Logging ChatGPTs response
                 self.logger.info(f"Robot: {gpt_response.chatgpt_response}")
 
-                self.send_speak_request(gpt_response.chatgpt_response)
+                tts_response = self.send_speak_request(gpt_response.chatgpt_response)
+                self.tts_processing_times.append(tts_response.processing_time)
+                self.logger.info(f"Processing time: {tts_response.processing_time}")
             else:
-                self.send_speak_request("Sorry, I did not understand you. Can you please repeat what you said?")
+                tts_response = self.send_speak_request("Sorry, I did not understand you. Can you please repeat what you said?")
+                self.tts_processing_times.append(tts_response.processing_time)
 
 
 def main():
