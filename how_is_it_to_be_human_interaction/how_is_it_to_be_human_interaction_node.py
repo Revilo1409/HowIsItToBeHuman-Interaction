@@ -201,7 +201,10 @@ class Interaction(Node):
         self.logger.info(f"Robot: {gpt_response.chatgpt_response}")
         self.send_speak_request(gpt_response.chatgpt_response)
 
-        while True:
+        # Number of sent messages to GPT
+        conversation_length = 0
+
+        while conversation_length < 30:
 
             # Trying to recognize user speech input
             speech_response = self.send_recognize_speech_request()
@@ -228,10 +231,13 @@ class Interaction(Node):
                 tts_response = self.send_speak_request(gpt_response.chatgpt_response)
                 self.tts_processing_times.append(tts_response.processing_time)
                 self.logger.info(f"Processing time: {tts_response.processing_time}")
+
+                conversation_length += 1
             else:
                 tts_response = self.send_speak_request("Sorry, I did not understand you. Can you please repeat what you said?")
                 self.tts_processing_times.append(tts_response.processing_time)
 
+        self.send_speak_request("Thank you for participating in this test. Have a wonderful day!")
 
 def main():
     rclpy.init()
