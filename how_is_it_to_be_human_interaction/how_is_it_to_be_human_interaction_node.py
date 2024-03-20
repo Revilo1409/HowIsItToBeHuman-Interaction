@@ -66,6 +66,12 @@ class Interaction(Node):
             self.logger.info(f"\nChatGPT API response time: \nMean: {mean_response_time}s")
             self.logger.info(f"Standard deviaton: {standard_deviation_response_time}s")
 
+            # Calculating mean and standard deviation of TTS processing time
+            mean_tts_processing_time = statistics.mean(self.tts_processing_times)
+            standard_deviation_tts_processing_time = statistics.stdev(self.tts_processing_times)
+            self.logger.info(f"\nTTS processing time: \nMean: {mean_tts_processing_time}s")
+            self.logger.info(f"Standard deviaton: {standard_deviation_tts_processing_time}s")
+
     def send_display_emotion_request(self, desired_emotion):
         """
         Send a request to the display_emotion service server.
@@ -221,6 +227,7 @@ class Interaction(Node):
 
                 tts_response = self.send_speak_request(gpt_response.chatgpt_response)
                 self.tts_processing_times.append(tts_response.processing_time)
+                self.logger.info(f"Processing time: {tts_response.processing_time}")
             else:
                 tts_response = self.send_speak_request("Sorry, I did not understand you. Can you please repeat what you said?")
                 self.tts_processing_times.append(tts_response.processing_time)
