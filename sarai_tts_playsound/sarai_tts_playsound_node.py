@@ -16,6 +16,8 @@ from playsound import playsound
 
 from ament_index_python import get_package_share_directory
 
+import time
+
 
 class TTS_Playsound(Node):
 
@@ -54,6 +56,8 @@ class TTS_Playsound(Node):
         """
         
         if self.altered_voice:
+            # Needed for measuring the TTS processing time
+            start = time.time()
             # Create an audio file containing the speech to alter
             tts = gTTS(request.message, lang=self.language)
             tts.save('voiceToAlter.mp3')
@@ -66,10 +70,19 @@ class TTS_Playsound(Node):
             # Play the altered audio file
             sound = AudioSegment.from_wav("alteredVoice.wav")
             sound.export("alteredVoice.mp3", format='mp3')
+            
+            # Measuring the processing time
+            end = time.time()
+            response.processing_time = end-start
+
             playsound("alteredVoice.mp3")
 
         else:
+            start = time.time()
             self.tts_engine.say(request.message)
+            end = time.time()
+            response.processing_time = end - start
+
             self.tts_engine.runAndWait()
 
         return response
