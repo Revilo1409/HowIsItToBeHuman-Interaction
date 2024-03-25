@@ -1,5 +1,6 @@
 import rclpy
 from rclpy.node import Node
+from rcl_interfaces.msg import ParameterDescriptor
 
 from sarai_msgs.srv import SetSpeech, GPTRequest, RecognizeSpeech, SetVoiceAlteration, GetGPTRequestParams
 
@@ -43,6 +44,9 @@ class Interaction(Node):
         self.gpt_response_times = []
         self.speech_processing_times = []
         self.tts_processing_times = []
+
+        max_conversation_length_descriptor = ParameterDescriptor("Number of back and forth messages")
+        self.declare_parameter("max_conversation_length", 30, max_conversation_length_descriptor)
 
         self.set_up_logger()
 
@@ -204,8 +208,9 @@ class Interaction(Node):
 
         # Number of sent messages to GPT
         conversation_length = 0
+        max_conversation_length = self.get_parameter("max_conversation_length").get_parameter_value().integer_value
 
-        while conversation_length < 30:
+        while conversation_length < max_conversation_length:
 
             # Trying to recognize user speech input
             speech_response = self.send_recognize_speech_request()
