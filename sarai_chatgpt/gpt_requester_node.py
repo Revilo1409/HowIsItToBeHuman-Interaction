@@ -156,6 +156,7 @@ class GPTRequester(Node):
 
         return response
 
+
 def main(args=None):
     rclpy.init(args=args)
 
@@ -165,6 +166,7 @@ def main(args=None):
 
     gpt_requester_node.destroy_node()
     rclpy.shutdown()
+
 
 if __name__ == "__main__":
     main()
