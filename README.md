@@ -16,6 +16,10 @@ This package allows to send messages to ChatGPT via the Python API.
 
 - [Robot Operating System (ROS2)](https://docs.ros.org/en/humble/index.html) (middleware for robotics).
 - [sarai_msgs](https://gitlab.kit.edu/kit/iar/sarai/software/ros2/sarai-standalone/sarai_msgs) for the custom ROS2 headers.
+- [openai](https://pypi.org/project/openai/): OpenAI Python library for access to the OpenAI API.
+    ```
+    sudo pip3 install openai
+    ```
 
 #### Building
 
