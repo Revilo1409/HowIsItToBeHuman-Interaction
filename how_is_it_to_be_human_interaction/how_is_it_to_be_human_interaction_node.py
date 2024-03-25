@@ -195,8 +195,11 @@ class Interaction(Node):
         gpt_params = self.send_get_gpt_request_params_request()
         gpt_params_string = f"ChatGPT persona: {gpt_params.chatgpt_persona} \n" 
         gpt_params_string += f"Temperature: {gpt_params.temperature}\n"
-        gpt_params_string += f"Max Window of last messages: {gpt_params.max_window_messages}\n ---"
+        gpt_params_string += f"Maximum Window of last messages: {gpt_params.max_window_messages}\n ---"
         self.conversation_logger.info(gpt_params_string)
+
+        max_conversation_length = self.get_parameter("max_conversation_length").get_parameter_value().integer_value
+        self.conversation_logger.info(f"Maximum conversation length: {max_conversation_length}\n ---")
 
         # Sets the voice alteration to False.
         self.send_change_voice_alteration_request(False)
@@ -208,7 +211,6 @@ class Interaction(Node):
 
         # Number of sent messages to GPT
         conversation_length = 0
-        max_conversation_length = self.get_parameter("max_conversation_length").get_parameter_value().integer_value
 
         while conversation_length < max_conversation_length:
 
