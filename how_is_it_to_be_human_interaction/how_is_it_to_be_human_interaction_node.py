@@ -49,27 +49,27 @@ class Interaction(Node):
     def __del__(self):
     # On deletion of the class, calculate the mean and standard deviation and 
     # append it to the log file
-        self.logger.info("---")
+        self.conversation_logger.info("---")
         if len(self.gpt_response_times) > 1:
             # Calculating mean and standard deviation of the speech processing time
             # and also round the result to 3 decimal points
             mean_speech_processing_time = round(statistics.mean(self.speech_processing_times), 3)
             standard_deviation_speech_processing_time = round(statistics.stdev(self.speech_processing_times),3)
-            self.logger.info(f"Speech Recognition processing time:\nMean: {mean_speech_processing_time}s")
-            self.logger.info(f"Standard deviation: {standard_deviation_speech_processing_time}s")
+            self.conversation_logger.info(f"Speech Recognition processing time:\nMean: {mean_speech_processing_time}s")
+            self.conversation_logger.info(f"Standard deviation: {standard_deviation_speech_processing_time}s")
 
             # Calculating mean and standard deviation of ChatGPTs response time
             # and also round the result to 3 decimal points
             mean_gpt_response_time = round(statistics.mean(self.gpt_response_times), 3)
             standard_deviation_gpt_response_time = round(statistics.stdev(self.gpt_response_times), 3)
-            self.logger.info(f"\nChatGPT API response time: \nMean: {mean_gpt_response_time}s")
-            self.logger.info(f"Standard deviaton: {standard_deviation_gpt_response_time}s")
+            self.conversation_logger.info(f"\nChatGPT API response time: \nMean: {mean_gpt_response_time}s")
+            self.conversation_logger.info(f"Standard deviaton: {standard_deviation_gpt_response_time}s")
 
             # Calculating mean and standard deviation of TTS processing time
             mean_tts_processing_time = statistics.mean(self.tts_processing_times)
             standard_deviation_tts_processing_time = statistics.stdev(self.tts_processing_times)
-            self.logger.info(f"\nTTS processing time: \nMean: {mean_tts_processing_time}s")
-            self.logger.info(f"Standard deviaton: {standard_deviation_tts_processing_time}s")
+            self.conversation_logger.info(f"\nTTS processing time: \nMean: {mean_tts_processing_time}s")
+            self.conversation_logger.info(f"Standard deviaton: {standard_deviation_tts_processing_time}s")
 
     def send_display_emotion_request(self, desired_emotion):
         """
@@ -162,10 +162,10 @@ class Interaction(Node):
         Setting up the logger so its ready to use for logging into a file.
         """
 
-        self.logger = logging.getLogger()
+        self.conversation_logger = logging.getLogger()
 
         # Sets the logging level to INFO
-        self.logger.setLevel(logging.INFO)
+        self.conversation_logger.setLevel(logging.INFO)
 
         # Formatter that puts just the given message into the log
         formatter = logging.Formatter("%(message)s")
@@ -177,7 +177,7 @@ class Interaction(Node):
         handler.setLevel(logging.INFO)
         handler.setFormatter(formatter)
         
-        self.logger.addHandler(handler)
+        self.conversation_logger.addHandler(handler)
 
     def interaction(self):
         """
@@ -190,14 +190,14 @@ class Interaction(Node):
         gpt_params_string = f"ChatGPT persona: {gpt_params.chatgpt_persona} \n" 
         gpt_params_string += f"Temperature: {gpt_params.temperature}\n"
         gpt_params_string += f"Max Window of last messages: {gpt_params.max_window_messages}\n ---"
-        self.logger.info(gpt_params_string)
+        self.conversation_logger.info(gpt_params_string)
 
         # Sets the voice alteration to False.
         self.send_change_voice_alteration_request(False)
 
         # Empty input for starting the conversation with ChatGPT
         gpt_response = self.send_gpt_request()
-        self.logger.info(f"Robot: {gpt_response.chatgpt_response}")
+        self.conversation_logger.info(f"Robot: {gpt_response.chatgpt_response}")
         self.send_speak_request(gpt_response.chatgpt_response)
 
         # Number of sent messages to GPT
@@ -215,7 +215,7 @@ class Interaction(Node):
             # and use TTS for ChatGPTs response
             if success:
                 self.speech_processing_times.append(speech_response.processing_time)
-                self.logger.info(f"User: {message}")
+                self.conversation_logger.info(f"User: {message}")
                 
                 # Measuring the response time of the request
                 start = time.time()
@@ -225,11 +225,11 @@ class Interaction(Node):
                 self.gpt_response_times.append(response_time)
 
                 # Logging ChatGPTs response
-                self.logger.info(f"Robot: {gpt_response.chatgpt_response}")
+                self.conversation_logger.info(f"Robot: {gpt_response.chatgpt_response}")
 
                 tts_response = self.send_speak_request(gpt_response.chatgpt_response)
                 self.tts_processing_times.append(tts_response.processing_time)
-                self.logger.info(f"Processing time: {tts_response.processing_time}")
+                self.conversation_logger.info(f"Processing time: {tts_response.processing_time}")
 
                 conversation_length += 1
             else:
