@@ -46,7 +46,7 @@ class GPTRequester(Node):
                  going nowhere, you have to provide something new to the topic.
                  You have some fundamental philosophical knowledge. Your 
                  responses have a maximum length of ca. 20 words."""
-        self.declare_parameter("chatgpt_persona", default_chatgpt_persona, chatgpt_persona_descriptor,)
+        self.declare_parameter("chatgpt_persona", default_chatgpt_persona, chatgpt_persona_descriptor)
 
         # Parameter for setting the maximum number of messages in the history that should be sent to GPT
         self.declare_parameter("max_window_messages", 100, max_window_messages_descriptor)
@@ -149,7 +149,7 @@ class GPTRequester(Node):
 
         :return: All parameters (but not api_key)
         """
-        
+
         response.chatgpt_persona = self.get_parameter("chatgpt_persona").get_parameter_value().string_value
         response.temperature = self.get_parameter("temperature").get_parameter_value()._double_value
         response.max_window_messages = self.get_parameter("max_window_messages").get_parameter_value().integer_value
