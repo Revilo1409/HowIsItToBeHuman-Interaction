@@ -1,5 +1,6 @@
 import rclpy
 from rclpy.node import Node
+from rcl_interfaces.msg import ParameterDescriptor
 
 from sarai_msgs.srv import SetSpeech, GPTRequest, RecognizeSpeech, SetVoiceAlteration, GetGPTRequestParams
 
@@ -43,6 +44,9 @@ class Interaction(Node):
         self.gpt_response_times = []
         self.speech_processing_times = []
         self.tts_processing_times = []
+
+        max_conversation_length_descriptor = ParameterDescriptor("Number of back and forth messages")
+        self.declare_parameter("max_conversation_length", 30, max_conversation_length_descriptor)
 
         self.set_up_logger()
 
@@ -191,8 +195,11 @@ class Interaction(Node):
         gpt_params = self.send_get_gpt_request_params_request()
         gpt_params_string = f"ChatGPT persona: {gpt_params.chatgpt_persona} \n" 
         gpt_params_string += f"Temperature: {gpt_params.temperature}\n"
-        gpt_params_string += f"Max Window of last messages: {gpt_params.max_window_messages}\n ---"
+        gpt_params_string += f"Maximum Window of last messages: {gpt_params.max_window_messages}\n ---"
         self.conversation_logger.info(gpt_params_string)
+
+        max_conversation_length = self.get_parameter("max_conversation_length").get_parameter_value().integer_value
+        self.conversation_logger.info(f"Maximum conversation length: {max_conversation_length}\n ---")
 
         # Sets the voice alteration to False.
         self.send_change_voice_alteration_request(False)
@@ -212,17 +219,16 @@ class Interaction(Node):
         # Number of sent messages to GPT
         conversation_length = 0
 
-        while conversation_length < 30:
+        while conversation_length < max_conversation_length:
 
             # Trying to recognize user speech input
             speech_response = self.send_recognize_speech_request()
             self.send_display_emotion_request("surprise")
             message = speech_response.recognized_speech
-            success = speech_response.success
             
             # If successfully recognized speech input --> Send a request to ChatGPT
             # and use TTS for ChatGPTs response
-            if success:
+            if speech_response.success:
                 self.speech_processing_times.append(speech_response.processing_time)
                 self.conversation_logger.info(f"User: {message}")
                 
@@ -238,7 +244,6 @@ class Interaction(Node):
 
                 tts_response = self.send_speak_request(gpt_response.chatgpt_response)
                 self.tts_processing_times.append(tts_response.processing_time)
-                self.conversation_logger.info(f"Processing time: {tts_response.processing_time}")
 
                 conversation_length += 1
             else:
