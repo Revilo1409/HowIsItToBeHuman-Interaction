@@ -55,9 +55,9 @@ class TTS_Playsound(Node):
         :param request: See SetSpeech service definition.
         """
         
+        # Needed for measuring the TTS processing time
+        start = time.time()
         if self.altered_voice:
-            # Needed for measuring the TTS processing time
-            start = time.time()
             # Create an audio file containing the speech to alter
             tts = gTTS(request.message, lang=self.language)
             tts.save('voiceToAlter.mp3')
@@ -73,17 +73,17 @@ class TTS_Playsound(Node):
             
             # Measuring the processing time
             end = time.time()
-            response.processing_time = end-start
 
             playsound("alteredVoice.mp3")
 
         else:
-            start = time.time()
             self.tts_engine.say(request.message)
             end = time.time()
-            response.processing_time = end - start
 
             self.tts_engine.runAndWait()
+
+
+        response.processing_time = end - start
 
         return response
 
