@@ -258,8 +258,12 @@ class Interaction(Node):
 
                 conversation_length += 1
             else:
-                tts_response = self.send_speak_request("Sorry, I did not understand you. Can you please repeat what you said?")
+                error_message = "Sorry, I did not understand you. Can you please repeat what you said?"
+
+                tts_response = self.send_speak_request(error_message)
                 self.tts_processing_times.append(tts_response.processing_time)
+                
+                self.send_unsuccessful_speech_recognition_request(error_message)
 
         self.send_speak_request("Thank you for participating in this test. Have a wonderful day!")
 
