@@ -40,7 +40,7 @@ class Interaction(Node):
                 self.get_logger().info(f'{client.srv_name} service not available, waiting again...')
 
         # Lists of response and processing times, needed for logging purposes.
-        self.response_times = []
+        self.gpt_response_times = []
         self.speech_processing_times = []
         self.tts_processing_times = []
 
@@ -50,7 +50,7 @@ class Interaction(Node):
     # On deletion of the class, calculate the mean and standard deviation and 
     # append it to the log file
         self.logger.info("---")
-        if len(self.response_times) > 1:
+        if len(self.gpt_response_times) > 1:
             # Calculating mean and standard deviation of the speech processing time
             # and also round the result to 3 decimal points
             mean_speech_processing_time = round(statistics.mean(self.speech_processing_times), 3)
@@ -60,10 +60,10 @@ class Interaction(Node):
 
             # Calculating mean and standard deviation of ChatGPTs response time
             # and also round the result to 3 decimal points
-            mean_response_time = round(statistics.mean(self.response_times), 3)
-            standard_deviation_response_time = round(statistics.stdev(self.response_times), 3)
-            self.logger.info(f"\nChatGPT API response time: \nMean: {mean_response_time}s")
-            self.logger.info(f"Standard deviaton: {standard_deviation_response_time}s")
+            mean_gpt_response_time = round(statistics.mean(self.gpt_response_times), 3)
+            standard_deviation_gpt_response_time = round(statistics.stdev(self.gpt_response_times), 3)
+            self.logger.info(f"\nChatGPT API response time: \nMean: {mean_gpt_response_time}s")
+            self.logger.info(f"Standard deviaton: {standard_deviation_gpt_response_time}s")
 
             # Calculating mean and standard deviation of TTS processing time
             mean_tts_processing_time = statistics.mean(self.tts_processing_times)
@@ -222,7 +222,7 @@ class Interaction(Node):
                 gpt_response = self.send_gpt_request(message)
                 end = time.time()
                 response_time = end - start
-                self.response_times.append(response_time)
+                self.gpt_response_times.append(response_time)
 
                 # Logging ChatGPTs response
                 self.logger.info(f"Robot: {gpt_response.chatgpt_response}")
