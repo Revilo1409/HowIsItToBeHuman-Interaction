@@ -47,8 +47,10 @@ class Interaction(Node):
         self.set_up_logger()
 
     def __del__(self):
-    # On deletion of the class, calculate the mean and standard deviation and 
-    # append it to the log file
+        """
+        Called upon deletion of the class: calculate the means and standard deviations and 
+        append it to the log file
+        """
         self.conversation_logger.info("---")
         if len(self.gpt_response_times) > 1:
             # Calculating mean and standard deviation of the speech processing time
