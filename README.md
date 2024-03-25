@@ -2,7 +2,9 @@
 
 ## Overview
 
-This package allows to launch the robot-based discussion activity that uses ChatGPT.
+This package allows to launch the robot-based discussion activity that uses ChatGPT:
+It is handling a discussion between a robot - which uses the ChatGPT API to create answers- and a human. The goal is to create a fluent, engaging conversation, which is led by the robot.
+
 
 **Keywords:**  human-robot interaction, AI, ChatGPT.
 
