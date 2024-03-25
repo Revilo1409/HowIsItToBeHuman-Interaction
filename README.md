@@ -59,7 +59,7 @@ Allows to send messages to ChatGPT.
     ros2 service call /gpt_request sarai_msgs/GPTRequest "user_input: 'How are you GPT?'"
     ```
 
-* **`get_gpt_request_params`** ([sarai_msgs/GetGPTRequestParams](TODO))
+* **`get_gpt_request_params`** ([sarai_msgs/GetGPTRequestParams](https://gitlab.kit.edu/kit/iar/sarai/software/ros2/sarai-standalone/sarai_msgs/-/blob/main/srv/GetGPTRequestParams.srv?ref_type=heads))
 
     Returns the currently used parameters in this Node (does not return the parameter api_key).
     For example:
