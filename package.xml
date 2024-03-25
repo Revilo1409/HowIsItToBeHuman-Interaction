@@ -3,7 +3,7 @@
 <package format="3">
   <name>sarai_speech_recognition</name>
   <version>0.0.0</version>
-  <description>TODO: Package description</description>
+  <description>Package allowing any robot with a microphone to recognize speech</description>
   <maintainer email="romain.maure21@gmail.com">maure</maintainer>
   <license>Apache-2.0</license>
 
