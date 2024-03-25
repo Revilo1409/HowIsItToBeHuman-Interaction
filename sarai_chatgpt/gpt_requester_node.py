@@ -5,7 +5,7 @@ from rcl_interfaces.msg import ParameterDescriptor
 
 from std_srvs.srv import Empty
 
-from sarai_msgs.srv import GPTRequest, GetGPTRequestParams
+from sarai_msgs.srv import GPTRequest, GetGPTRequestParams, UnsuccessfulSpeechRecognition
 
 from openai import OpenAI
 import os
@@ -22,6 +22,9 @@ class GPTRequester(Node):
 
         # Service for getting the necessary independant variables from the parameters
         self.get_gpt_request_params_srv = self.create_service(GetGPTRequestParams, "get_gpt_request_params", self.get_gpt_request_params_callback)
+
+        # 
+        self.unsuccessful_speech_recognition_srv = self.create_service(UnsuccessfulSpeechRecognition, "unsuccessful_speech_recognition", self.unsuccessful_speech_recognition_callback)
 
         # Descriptor for api_key parameter
         api_key_descriptor = ParameterDescriptor(description="API Key for ChatGPT API")
@@ -147,13 +150,29 @@ class GPTRequester(Node):
         """
         Service handler returning all parameters.
 
-        :return: All parameters (but not api_key)
+        :param request: See GetGPTRequestParams service definition.
+        :param response: See GetGPTRequestParams service definition
         """
 
         response.chatgpt_persona = self.get_parameter("chatgpt_persona").get_parameter_value().string_value
         response.temperature = self.get_parameter("temperature").get_parameter_value().double_value
         response.max_window_messages = self.get_parameter("max_window_messages").get_parameter_value().integer_value
+        return response
+    
+    def unsuccessful_speech_recognition_callback(self, request, response):
+        """
+        Appends the error message to the message history, after the speech 
+        recognition wasn't successful.
 
+        :param request: See UnsuccessfulSpeechRecognition service definition.
+        :param response: See UnsuccessfulSpeechRecognition service definition
+        """
+
+        error_message =  {
+            "role": "assistant",
+            "content": request.error_message
+        }
+        self.message_history.append(error_message)
         return response
 
 
