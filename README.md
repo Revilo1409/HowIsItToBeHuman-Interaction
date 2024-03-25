@@ -1,10 +1,10 @@
-# SARAI ChatGPT
+# SARAI Speech Recognition
 
 ## Overview
 
 This package allows to recognize speech.
 
-**Keywords:** ChatGPT, AI
+**Keywords:** speech recognition, audio
 
 ### License
 
