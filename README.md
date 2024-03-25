@@ -16,7 +16,10 @@ This package allows to recognize speech.
 
 - [Robot Operating System (ROS2)](https://docs.ros.org/en/humble/index.html) (middleware for robotics).
 - [sarai_msgs](https://gitlab.kit.edu/kit/iar/sarai/software/ros2/sarai-standalone/sarai_msgs) for the custom ROS2 headers.
-- [SpeechRecognition](https://pypi.org/project/SpeechRecognition/) for the Speech Recognition
+- [SpeechRecognition](https://pypi.org/project/SpeechRecognition/) Python library for the speech recognition.
+    ```
+    sudo pip3 install SpeechRecognition
+    ```
 
 #### Building
 
