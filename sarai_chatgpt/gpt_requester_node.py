@@ -14,12 +14,6 @@ import os
 class GPTRequester(Node):
     MODEL = "gpt-3.5-turbo-1106"
 
-    # Parameter for storing the message history with GPT
-    message_history = []
-
-    # Boolean that states if the conversation already has been started before
-    conversation_started = False
-
     def __init__(self):
         super().__init__("gptrequester")
 
@@ -62,6 +56,12 @@ class GPTRequester(Node):
 
         # Creating client for communicating with GPT API
         self.gpt_client = OpenAI(api_key=self.get_parameter("api_key").get_parameter_value().string_value)
+
+        # Parameter for storing the message history with GPT
+        self.message_history = []
+
+        # Boolean that states if the conversation already has been started before
+        self.conversation_started = False   
 
     def gpt_request_callback(self, request, response):
         """
