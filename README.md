@@ -39,7 +39,7 @@ ros2 run sarai_speech_recognition sarai_speech_recognition_node
 
 ### sarai_speech_recognition_node
 
-Allows to run the the speech recognition.
+Allows to run the speech recognition.
 
 #### Services
 
