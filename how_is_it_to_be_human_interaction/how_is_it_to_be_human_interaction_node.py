@@ -218,11 +218,10 @@ class Interaction(Node):
             speech_response = self.send_recognize_speech_request()
             self.send_display_emotion_request("surprise")
             message = speech_response.recognized_speech
-            success = speech_response.success
             
             # If successfully recognized speech input --> Send a request to ChatGPT
             # and use TTS for ChatGPTs response
-            if success:
+            if speech_response.success:
                 self.speech_processing_times.append(speech_response.processing_time)
                 self.conversation_logger.info(f"User: {message}")
                 
