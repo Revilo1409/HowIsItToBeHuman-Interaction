@@ -238,7 +238,6 @@ class Interaction(Node):
 
                 tts_response = self.send_speak_request(gpt_response.chatgpt_response)
                 self.tts_processing_times.append(tts_response.processing_time)
-                self.conversation_logger.info(f"Processing time: {tts_response.processing_time}")
 
                 conversation_length += 1
             else:
