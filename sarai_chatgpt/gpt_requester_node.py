@@ -14,12 +14,6 @@ import os
 class GPTRequester(Node):
     MODEL = "gpt-3.5-turbo-1106"
 
-    # Parameter for storing the message history with GPT
-    message_history = []
-
-    # Boolean that states if the conversation already has been started before
-    conversation_started = False
-
     def __init__(self):
         super().__init__("gptrequester")
 
@@ -29,17 +23,20 @@ class GPTRequester(Node):
         # Service for getting the necessary independant variables from the parameters
         self.get_gpt_request_params_srv = self.create_service(GetGPTRequestParams, "get_gpt_request_params", self.get_gpt_request_params_callback)
 
+        # Descriptor for api_key parameter
+        api_key_descriptor = ParameterDescriptor(description="API Key for ChatGPT API")
+
         # Descriptor for role parameter
         chatgpt_persona_descriptor = ParameterDescriptor(description="This is a parameter for setting the role of ChatGPT")
 
         # Descriptor for maxWindow_messages parameter
         max_window_messages_descriptor = ParameterDescriptor(description="Max number of messages stored in the message history")
 
-        # Descriptor for api_key parameter
-        api_key_descriptor = ParameterDescriptor(description="API Key for ChatGPT API")
-
         # Descriptor for the temperature parameter
         temperature_descriptor = ParameterDescriptor(description="The temperature used in the ChatGPT API request")
+
+        # Get the API key from the environment variable.
+        self.declare_parameter("api_key", os.getenv("OPENAI_API_KEY"), api_key_descriptor)
 
         # Parameter for setting the role of ChatGPT
         default_chatgpt_persona = """You are now a social robot with an actual robot 
@@ -49,7 +46,7 @@ class GPTRequester(Node):
                  going nowhere, you have to provide something new to the topic.
                  You have some fundamental philosophical knowledge. Your 
                  responses have a maximum length of ca. 20 words."""
-        self.declare_parameter("chatgpt_persona", default_chatgpt_persona, chatgpt_persona_descriptor,)
+        self.declare_parameter("chatgpt_persona", default_chatgpt_persona, chatgpt_persona_descriptor)
 
         # Parameter for setting the maximum number of messages in the history that should be sent to GPT
         self.declare_parameter("max_window_messages", 100, max_window_messages_descriptor)
@@ -57,18 +54,18 @@ class GPTRequester(Node):
         # Parameter for setting the temperature in the ChatGPT API request
         self.declare_parameter("temperature", 0.7, temperature_descriptor)
 
-        # TODO: ADD THIS IN README --> API Key for ChatGPT API
-        # You must add OPENAI_API_KEY as an environment variable
-        # In Ubuntu: echo 'export OPENAI_API_KEY=your_api_key' >> ~/.bashrc
-        # Get the API key from the environment variable.
-        self.declare_parameter("api_key", os.getenv("OPENAI_API_KEY"), api_key_descriptor)
-
         # Creating client for communicating with GPT API
         self.gpt_client = OpenAI(api_key=self.get_parameter("api_key").get_parameter_value().string_value)
 
+        # Parameter for storing the message history with GPT
+        self.message_history = []
+
+        # Boolean that states if the conversation already has been started before
+        self.conversation_started = False   
+
     def gpt_request_callback(self, request, response):
         """
-        Service handler performing a request to the GPT API
+        Service handler performing a request to the OpenAI API
 
         :param request: See GPTRequest service definition.
         :param response: See GPTRequest service definition
@@ -76,16 +73,17 @@ class GPTRequester(Node):
 
          # Value between 0 and 1. Used to set the creativity of ChatGPTs answers
         temperature = self.get_parameter("temperature").get_parameter_value()._double_value
-
-        user_input_message = {"role": "user", "content": request.user_input}
         
-        messages = ''
+        messages = []
+
+        # If the conversation wasn't started yet, only put the persona message 
+        # into the messages.
         if not self.conversation_started:
             self.conversation_started = True
             messages = [self.get_chatgpt_persona_message()]
         else:
+            user_input_message = {"role": "user", "content": request.user_input}
             messages = self.get_max_window_messages(user_input_message)
-
 
         chat = self.gpt_client.chat.completions.create(
             model=self.MODEL,
@@ -101,7 +99,8 @@ class GPTRequester(Node):
         response.chatgpt_response = chatgpt_response
         response.success = True
 
-        self.message_history.append(user_input_message)
+        if request.user_input:
+            self.message_history.append(user_input_message)
         self.message_history.append({"role": "assistant", "content": chatgpt_response})
 
         return response
@@ -150,9 +149,11 @@ class GPTRequester(Node):
 
         :return: All parameters (but not api_key)
         """
+
         response.chatgpt_persona = self.get_parameter("chatgpt_persona").get_parameter_value().string_value
-        response.temperature = self.get_parameter("temperature").get_parameter_value()._double_value
+        response.temperature = self.get_parameter("temperature").get_parameter_value().double_value
         response.max_window_messages = self.get_parameter("max_window_messages").get_parameter_value().integer_value
+
         return response
 
 
