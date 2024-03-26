@@ -4,6 +4,7 @@ from rclpy.node import Node
 from sarai_msgs.srv import RecognizeSpeech
 
 import speech_recognition as sr
+import time
 
 # Removes all unnecessary error prints
 import sounddevice
@@ -27,6 +28,10 @@ class Sarai_Speech_Recognition(Node):
             # SpeechRecognition won't work after a few times
             self.speech_recognizer.dynamic_energy_threshold = False
 
+            # Seconds of non speaking audio before the speaking audio is considered a phrase
+            # Default is 0.8
+            self.speech_recognizer.pause_threshold = 1.5
+
     def recognize_speech_callback(self, request, response):
         """
         Service handler performing the speech recognition
@@ -37,13 +42,14 @@ class Sarai_Speech_Recognition(Node):
 
         # Setting up microphone for Speech Recognition
         with sr.Microphone() as source:
-            print(f"Energy threshold: {self.speech_recognizer.energy_threshold}")
-            print("Say something!")
             self.audio = self.speech_recognizer.listen(source, None)
-            print("Said something")
 
         try:
+            start = time.time()
             response.recognized_speech = self.speech_recognizer.recognize_google(self.audio)
+            end = time.time()
+
+            response.processing_time = end - start
             response.success = True
             return response
         except sr.UnknownValueError:
