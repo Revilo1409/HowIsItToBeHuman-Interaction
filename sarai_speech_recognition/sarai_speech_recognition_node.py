@@ -39,16 +39,14 @@ class Sarai_Speech_Recognition(Node):
         :param request: See RecognizeSpeech service definition.
         :param response: See RecognizeSpeech service definition.
         """
-        
+
         # Setting up microphone for Speech Recognition
         with sr.Microphone() as source:
             self.audio = self.speech_recognizer.listen(source, None)
 
         try:
             start = time.time()
-
             response.recognized_speech = self.speech_recognizer.recognize_google(self.audio)
-
             end = time.time()
 
             response.processing_time = end - start
