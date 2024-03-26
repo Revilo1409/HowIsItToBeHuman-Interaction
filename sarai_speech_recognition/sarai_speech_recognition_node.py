@@ -41,13 +41,16 @@ class Sarai_Speech_Recognition(Node):
         """
         # Setting up microphone for Speech Recognition
         with sr.Microphone() as source:
-            start = time.time()
             self.audio = self.speech_recognizer.listen(source, None)
-            end = time.time()
-            response.processing_time = end - start
 
         try:
+            start = time.time()
+
             response.recognized_speech = self.speech_recognizer.recognize_google(self.audio)
+
+            end = time.time()
+            
+            response.processing_time = end - start
             response.success = True
             return response
         except sr.UnknownValueError:
