@@ -48,7 +48,7 @@ class Interaction(Node):
         self.speech_processing_times = []
         self.tts_processing_times = []
 
-        max_conversation_length_descriptor = ParameterDescriptor("Number of back and forth messages")
+        max_conversation_length_descriptor = ParameterDescriptor(description="Number of back and forth messages")
         self.declare_parameter("max_conversation_length", 30, max_conversation_length_descriptor)
 
         self.set_up_logger()
