@@ -13,6 +13,7 @@ import os
 
 class GPTRequester(Node):
     MODEL = "gpt-3.5-turbo-1106"
+    INFINITE_MESSAGE_HISTORY = -1
 
     def __init__(self):
         super().__init__("gptrequester")
@@ -52,7 +53,7 @@ class GPTRequester(Node):
         self.declare_parameter("chatgpt_persona", default_chatgpt_persona, chatgpt_persona_descriptor)
 
         # Parameter for setting the maximum number of messages in the history that should be sent to GPT
-        self.declare_parameter("max_window_messages", 100, max_window_messages_descriptor)
+        self.declare_parameter("max_window_messages", self.INFINITE_MESSAGE_HISTORY, max_window_messages_descriptor)
         
         # Parameter for setting the temperature in the ChatGPT API request
         self.declare_parameter("temperature", 0.7, temperature_descriptor)
@@ -120,8 +121,12 @@ class GPTRequester(Node):
 
         chatgpt_persona_message = self.get_chatgpt_persona_message()
         max_window_messages = self.get_parameter("max_window_messages").get_parameter_value().integer_value
-
-        last_max_window_messages = self.message_history[-max_window_messages:]
+        
+        # If max_window_messages = -1, use whole message history
+        if max_window_messages == self.INFINITE_MESSAGE_HISTORY:
+            last_max_window_messages = self.message_history
+        else:
+            last_max_window_messages = self.message_history[-max_window_messages:]
 
         # Prepends the chatgpt_persona_message
         last_max_window_messages.insert(0, chatgpt_persona_message)
