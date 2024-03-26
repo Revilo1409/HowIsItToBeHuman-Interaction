@@ -16,6 +16,8 @@ from playsound import playsound
 
 from ament_index_python import get_package_share_directory
 
+import time
+
 
 class TTS_Playsound(Node):
 
@@ -53,6 +55,8 @@ class TTS_Playsound(Node):
         :param request: See SetSpeech service definition.
         """
         
+        # Needed for measuring the TTS processing time
+        start = time.time()
         if self.altered_voice:
             # Create an audio file containing the speech to alter
             tts = gTTS(request.message, lang=self.language)
@@ -66,11 +70,19 @@ class TTS_Playsound(Node):
             # Play the altered audio file
             sound = AudioSegment.from_wav("alteredVoice.wav")
             sound.export("alteredVoice.mp3", format='mp3')
+            
+            # Measuring the processing time
+            end = time.time()
+
             playsound("alteredVoice.mp3")
 
         else:
             self.tts_engine.say(request.message)
+            end = time.time()
+
             self.tts_engine.runAndWait()
+
+        response.processing_time = end - start
 
         return response
 
