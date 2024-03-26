@@ -82,7 +82,6 @@ class TTS_Playsound(Node):
 
             self.tts_engine.runAndWait()
 
-
         response.processing_time = end - start
 
         return response
