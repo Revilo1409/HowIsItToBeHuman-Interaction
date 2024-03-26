@@ -1,3 +1,4 @@
 ---
 string recognized_speech
 bool success
+float64 processing_time
