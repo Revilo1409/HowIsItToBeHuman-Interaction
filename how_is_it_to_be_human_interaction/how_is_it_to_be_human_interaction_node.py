@@ -12,6 +12,9 @@ import time, numpy
 
 
 class Interaction(Node):
+    
+    # Defines
+    INFINITE_CONVERSATION = -1
 
     def __init__(self):    
         super().__init__("how_is_it_to_be_human_interaction_node")
@@ -235,7 +238,7 @@ class Interaction(Node):
         # Number of sent messages to GPT
         conversation_length = 0
 
-        while conversation_length < max_conversation_length:
+        while max_conversation_length == self.INFINITE_CONVERSATION | conversation_length < max_conversation_length:
 
             # Trying to recognize user speech input
             speech_response = self.send_recognize_speech_request()
