@@ -61,7 +61,6 @@ class Interaction(Node):
         Called upon deletion of the class: calculate the means and standard deviations and 
         append it to the log file
         """
-        
         self.conversation_logger.info("---")
 
         # Calculating mean and standard deviation of the speech processing time
