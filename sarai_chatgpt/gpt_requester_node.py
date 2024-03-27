@@ -166,7 +166,7 @@ class GPTRequester(Node):
     
     def unsuccessful_speech_recognition_callback(self, request, response):
         """
-        Appends the error message to the message history, after the speech 
+        Appends the error message to the message history, if the speech 
         recognition wasn't successful.
 
         :param request: See UnsuccessfulSpeechRecognition service definition.
