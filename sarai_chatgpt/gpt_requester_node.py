@@ -24,7 +24,7 @@ class GPTRequester(Node):
         # Service for getting the necessary independant variables from the parameters
         self.get_gpt_request_params_srv = self.create_service(GetGPTRequestParams, "get_gpt_request_params", self.get_gpt_request_params_callback)
 
-        # 
+        # Service for appending the unsuccessful speech recognition message to the message history
         self.unsuccessful_speech_recognition_srv = self.create_service(UnsuccessfulSpeechRecognition, "unsuccessful_speech_recognition", self.unsuccessful_speech_recognition_callback)
 
         # Descriptor for api_key parameter
