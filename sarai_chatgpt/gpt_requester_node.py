@@ -116,7 +116,7 @@ class GPTRequester(Node):
 
         :param user_input: Message the user wants to send to GPT API
         :return: role_message, last max_window_messages of
-                message history and the user_input appended together
+                 message history and the user_input appended together
         """
 
         chatgpt_persona_message = self.get_chatgpt_persona_message()
