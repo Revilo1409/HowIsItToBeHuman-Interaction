@@ -153,7 +153,7 @@ class GPTRequester(Node):
     
     def get_gpt_request_params_callback(self, request, response):
         """
-        Service handler returning all parameters.
+        Service handler returning all the node's ROS2 parameters (except api_key).
 
         :param request: See GetGPTRequestParams service definition.
         :param response: See GetGPTRequestParams service definition
