@@ -253,6 +253,7 @@ class Interaction(Node):
 
         self.send_speak_request("Thank you for participating in this test. Have a wonderful day!")
 
+
 def main():
     rclpy.init()
 
