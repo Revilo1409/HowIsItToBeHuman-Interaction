@@ -192,6 +192,21 @@ class Interaction(Node):
         
         self.conversation_logger.addHandler(handler)
 
+    def send_unsuccessful_speech_recognition_request(self, error_message):
+        """
+        Sends a request to the unsuccessful_speech_recognition service server.
+
+        :param error_message: String to set the error_message.
+        """
+
+        request = UnsuccessfulSpeechRecognition.Request()
+        request.error_message = error_message
+
+        self.future = self.unsuccessful_speech_recognition_cli.call_async(request)
+        rclpy.spin_until_future_complete(self, self.future)
+
+        return self.future.result()
+
     def interaction(self):
         """
         Main interaction.
