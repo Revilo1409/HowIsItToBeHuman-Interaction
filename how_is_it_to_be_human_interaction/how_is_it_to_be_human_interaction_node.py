@@ -2,7 +2,7 @@ import rclpy
 from rclpy.node import Node
 from rcl_interfaces.msg import ParameterDescriptor
 
-from sarai_msgs.srv import SetSpeech, GPTRequest, RecognizeSpeech, SetVoiceAlteration, GetGPTRequestParams
+from sarai_msgs.srv import SetSpeech, GPTRequest, RecognizeSpeech, SetVoiceAlteration, GetGPTRequestParams, UnsuccessfulSpeechRecognition
 
 from pixelbot_msgs.srv import DisplayEmotion
 
@@ -36,10 +36,13 @@ class Interaction(Node):
         # Create client to get parameters of gpt_requester
         self.get_gpt_request_params_cli = self.create_client(GetGPTRequestParams, 'get_gpt_request_params')
 
+        # Create a client for unsuccessful speech recognition
+        self.unsuccessful_speech_recognition_cli = self.create_client(UnsuccessfulSpeechRecognition, 'unsuccessful_speech_recognition')
+
         # Wait for clients to be ready
         for client in [self.gpt_request_cli, self.speak_cli, self.recognize_speech_cli, 
                        self.display_emotion_cli, self.change_voice_alteration_cli, 
-                       self.get_gpt_request_params_cli]:
+                       self.get_gpt_request_params_cli, self.unsuccessful_speech_recognition_cli]:
             while not client.wait_for_service(timeout_sec=1.0):
                 self.get_logger().info(f'{client.srv_name} service not available, waiting again...')
 
