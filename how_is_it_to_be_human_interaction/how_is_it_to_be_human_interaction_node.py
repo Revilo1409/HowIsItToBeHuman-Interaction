@@ -239,6 +239,7 @@ class Interaction(Node):
                 tts_response = self.send_speak_request(gpt_response.chatgpt_response)
                 self.tts_processing_times.append(tts_response.processing_time)
 
+                # Increment the back and forth messages counter
                 conversation_length += 1
             else:
                 tts_response = self.send_speak_request("Sorry, I did not understand you. Can you please repeat what you said?")
