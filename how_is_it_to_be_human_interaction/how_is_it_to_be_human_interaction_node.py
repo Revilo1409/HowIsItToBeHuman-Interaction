@@ -270,6 +270,7 @@ class Interaction(Node):
             else:
                 error_message = "Sorry, I did not understand you. Can you please repeat what you said?"
                 
+                # Adds the error_message to the message history
                 self.send_unsuccessful_speech_recognition_request(error_message)
                 self.conversation_logger.info(f"Robot: {error_message}")
 
