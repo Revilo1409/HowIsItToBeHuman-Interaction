@@ -1,6 +1,6 @@
 import rclpy
 from rclpy.node import Node
-from rclpy.parameter import Parameter
+from rcl_interfaces.msg import ParameterDescriptor
 
 from sarai_msgs.srv import SetSpeech, GPTRequest, RecognizeSpeech, SetVoiceAlteration, GetGPTRequestParams
 
@@ -40,10 +40,43 @@ class Interaction(Node):
             while not client.wait_for_service(timeout_sec=1.0):
                 self.get_logger().info(f'{client.srv_name} service not available, waiting again...')
 
-        # List of response times, needed for test purposes.
-        self.response_times = []
+        # Lists of response and processing times, needed for logging purposes.
+        self.gpt_response_times = []
+        self.speech_processing_times = []
+        self.tts_processing_times = []
+
+        max_conversation_length_descriptor = ParameterDescriptor("Number of back and forth messages")
+        self.declare_parameter("max_conversation_length", 30, max_conversation_length_descriptor)
 
         self.set_up_logger()
+
+    def __del__(self):
+        """
+        Called upon deletion of the class: calculate the means and standard deviations and 
+        append it to the log file
+        """
+        
+        self.conversation_logger.info("---")
+        if len(self.gpt_response_times) > 1:
+            # Calculating mean and standard deviation of the speech processing time
+            # and also round the result to 3 decimal points
+            mean_speech_processing_time = round(statistics.mean(self.speech_processing_times), 3)
+            standard_deviation_speech_processing_time = round(statistics.stdev(self.speech_processing_times),3)
+            self.conversation_logger.info(f"Speech Recognition processing time:\nMean: {mean_speech_processing_time}s")
+            self.conversation_logger.info(f"Standard deviation: {standard_deviation_speech_processing_time}s")
+
+            # Calculating mean and standard deviation of ChatGPTs response time
+            # and also round the result to 3 decimal points
+            mean_gpt_response_time = round(statistics.mean(self.gpt_response_times), 3)
+            standard_deviation_gpt_response_time = round(statistics.stdev(self.gpt_response_times), 3)
+            self.conversation_logger.info(f"\nChatGPT API response time: \nMean: {mean_gpt_response_time}s")
+            self.conversation_logger.info(f"Standard deviaton: {standard_deviation_gpt_response_time}s")
+
+            # Calculating mean and standard deviation of TTS processing time
+            mean_tts_processing_time = statistics.mean(self.tts_processing_times)
+            standard_deviation_tts_processing_time = statistics.stdev(self.tts_processing_times)
+            self.conversation_logger.info(f"\nTTS processing time: \nMean: {mean_tts_processing_time}s")
+            self.conversation_logger.info(f"Standard deviaton: {standard_deviation_tts_processing_time}s")
 
     def send_display_emotion_request(self, desired_emotion):
         """
@@ -135,28 +168,23 @@ class Interaction(Node):
         """
         Setting up the logger so its ready to use for logging into a file.
         """
-        
-        filename = "chat.log"
 
-        self.logger = logging.getLogger()
+        self.conversation_logger = logging.getLogger()
 
         # Sets the logging level to INFO
-        self.logger.setLevel(logging.INFO)
+        self.conversation_logger.setLevel(logging.INFO)
 
         # Formatter that puts just the given message into the log
         formatter = logging.Formatter("%(message)s")
 
-        # Creates a RotatingFileHandler, that handles log file creation for 
-        # every new conversation
-        handler = logging.handlers.RotatingFileHandler(filename, mode = 'w', backupCount=10)
+        # Creates a FileHandler, that handles log file creation for 
+        # every new conversation, using the timestamp as a name
+        filename = time.strftime("%d_%m_%Y__%H.%M.%S.log")
+        handler = logging.FileHandler(f"./thesis_logs/{filename}")
         handler.setLevel(logging.INFO)
         handler.setFormatter(formatter)
-
-        # Does the rollover for the log file, so for every new conversation, 
-        # a new log file is created.
-        logging.handlers.RotatingFileHandler.doRollover(handler)
         
-        self.logger.addHandler(handler)
+        self.conversation_logger.addHandler(handler)
 
     def interaction(self):
         """
@@ -168,63 +196,56 @@ class Interaction(Node):
         gpt_params = self.send_get_gpt_request_params_request()
         gpt_params_string = f"ChatGPT persona: {gpt_params.chatgpt_persona} \n" 
         gpt_params_string += f"Temperature: {gpt_params.temperature}\n"
-        gpt_params_string += f"Max Window of last messages: {gpt_params.max_window_messages}\n ---"
-        self.logger.info(gpt_params_string)
+        gpt_params_string += f"Maximum Window of last messages: {gpt_params.max_window_messages}\n ---"
+        self.conversation_logger.info(gpt_params_string)
+
+        max_conversation_length = self.get_parameter("max_conversation_length").get_parameter_value().integer_value
+        self.conversation_logger.info(f"Maximum conversation length: {max_conversation_length}\n ---")
 
         # Sets the voice alteration to False.
         self.send_change_voice_alteration_request(False)
 
         # Empty input for starting the conversation with ChatGPT
         gpt_response = self.send_gpt_request()
-        self.logger.info(f"Robot: {gpt_response.chatgpt_response}")
+        self.conversation_logger.info(f"Robot: {gpt_response.chatgpt_response}")
         self.send_speak_request(gpt_response.chatgpt_response)
 
-        try:
+        # Number of sent messages to GPT
+        conversation_length = 0
 
-        # While Loop for conversation flow
-            while True:
+        while conversation_length < max_conversation_length:
 
-                # Trying to recognize user speech input
-                print("Trying to recognize speech")
-                response = self.send_recognize_speech_request()
-                self.send_display_emotion_request("surprise")
-                message = response.recognized_speech
-                success = response.success
+            # Trying to recognize user speech input
+            speech_response = self.send_recognize_speech_request()
+            self.send_display_emotion_request("surprise")
+            message = speech_response.recognized_speech
+            
+            # If successfully recognized speech input --> Send a request to ChatGPT
+            # and use TTS for ChatGPTs response
+            if speech_response.success:
+                self.speech_processing_times.append(speech_response.processing_time)
+                self.conversation_logger.info(f"User: {message}")
                 
-                # If successfully recognized speech input --> Send a request to ChatGPT
-                # and use TTS for ChatGPTs response
-                if success:
-                    self.logger.info(f"User: {message}")
-                    print(f"The PC understood this:{message}")
-                    
-                    # Measuring the response time of the request
-                    start = time.time()
-                    gpt_response = self.send_gpt_request(message)
-                    end = time.time()
-                    response_time = end - start
-                    self.response_times.append(response_time)
+                # Measuring the response time of the request
+                start = time.time()
+                gpt_response = self.send_gpt_request(message)
+                end = time.time()
+                response_time = end - start
+                self.gpt_response_times.append(response_time)
 
-                    # Logging the response time and message
-                    self.logger.info(f"Response time: {response_time}")
-                    self.logger.info(f"Robot: {gpt_response.chatgpt_response}")
+                # Logging ChatGPTs response
+                self.conversation_logger.info(f"Robot: {gpt_response.chatgpt_response}")
 
-                    print(f"GPT: {gpt_response.chatgpt_response}")
-                    self.send_speak_request(gpt_response.chatgpt_response)
-                else:
-                    self.send_speak_request("Sorry, I did not understand you. Can you please repeat what you said?")
-                    print("Message finished.")
+                tts_response = self.send_speak_request(gpt_response.chatgpt_response)
+                self.tts_processing_times.append(tts_response.processing_time)
 
-        except KeyboardInterrupt:
-            # If at least one response time is given
-            if self.response_times:
-                average_response_time = statistics.mean(self.response_times)
-                standard_deviation = statistics.stdev(self.response_times)
-                self.logger.info("---")
-                self.logger.info(f"Mean response time: {average_response_time}")
-                self.logger.info(f"Standard deviaton of response time: {standard_deviation}")
+                # Increment the back and forth messages counter
+                conversation_length += 1
+            else:
+                tts_response = self.send_speak_request("Sorry, I did not understand you. Can you please repeat what you said?")
+                self.tts_processing_times.append(tts_response.processing_time)
 
-        print("\nClosing GPTClient...")
-
+        self.send_speak_request("Thank you for participating in this test. Have a wonderful day!")
 
 def main():
     rclpy.init()
