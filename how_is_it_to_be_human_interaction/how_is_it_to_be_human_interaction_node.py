@@ -11,6 +11,9 @@ import time, numpy
 
 
 class Interaction(Node):
+    
+    # Defines
+    INFINITE_CONVERSATION = -1
 
     def __init__(self):    
         super().__init__("how_is_it_to_be_human_interaction_node")
@@ -45,7 +48,7 @@ class Interaction(Node):
         self.speech_processing_times = []
         self.tts_processing_times = []
 
-        max_conversation_length_descriptor = ParameterDescriptor("Number of back and forth messages")
+        max_conversation_length_descriptor = ParameterDescriptor(description="Number of back and forth messages")
         self.declare_parameter("max_conversation_length", 30, max_conversation_length_descriptor)
 
         self.set_up_logger()
@@ -55,7 +58,7 @@ class Interaction(Node):
         Called upon deletion of the class: calculate the means and standard deviations and 
         append it to the log file
         """
-        
+
         self.conversation_logger.info("---")
 
         # Calculating mean and standard deviation of the speech processing time
@@ -220,7 +223,7 @@ class Interaction(Node):
         # Number of sent messages to GPT
         conversation_length = 0
 
-        while conversation_length < max_conversation_length:
+        while max_conversation_length == self.INFINITE_CONVERSATION or conversation_length < max_conversation_length:
 
             # Trying to recognize user speech input
             speech_response = self.send_recognize_speech_request()
