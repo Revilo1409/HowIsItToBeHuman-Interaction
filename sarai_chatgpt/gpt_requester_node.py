@@ -161,6 +161,7 @@ class GPTRequester(Node):
         response.chatgpt_persona = self.get_parameter("chatgpt_persona").get_parameter_value().string_value
         response.temperature = self.get_parameter("temperature").get_parameter_value().double_value
         response.max_window_messages = self.get_parameter("max_window_messages").get_parameter_value().integer_value
+
         return response
     
     def unsuccessful_speech_recognition_callback(self, request, response):
@@ -177,6 +178,7 @@ class GPTRequester(Node):
             "content": request.error_message
         }
         self.message_history.append(error_message)
+        
         return response
 
 
