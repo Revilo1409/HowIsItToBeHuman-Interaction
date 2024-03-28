@@ -239,8 +239,7 @@ class Interaction(Node):
                 start = time.time()
                 gpt_response = self.send_gpt_request(message)
                 end = time.time()
-                response_time = end - start
-                self.gpt_response_times.append(response_time)
+                self.gpt_response_times.append(end - start)
 
                 # Logging ChatGPTs response
                 self.conversation_logger.info(f"Robot: {gpt_response.chatgpt_response}")
@@ -255,6 +254,7 @@ class Interaction(Node):
                 self.tts_processing_times.append(tts_response.processing_time)
 
         self.send_speak_request("Thank you for participating in this test. Have a wonderful day!")
+
 
 def main():
     rclpy.init()
