@@ -7,7 +7,7 @@ from sarai_msgs.srv import SetSpeech, GPTRequest, RecognizeSpeech, SetVoiceAlter
 from pixelbot_msgs.srv import DisplayEmotion
 
 import logging, logging.handlers
-import time, statistics
+import time, numpy
 
 
 class Interaction(Node):
@@ -57,26 +57,26 @@ class Interaction(Node):
         """
         
         self.conversation_logger.info("---")
-        if len(self.gpt_response_times) > 1:
-            # Calculating mean and standard deviation of the speech processing time
-            # and also round the result to 3 decimal points
-            mean_speech_processing_time = round(statistics.mean(self.speech_processing_times), 3)
-            standard_deviation_speech_processing_time = round(statistics.stdev(self.speech_processing_times),3)
-            self.conversation_logger.info(f"Speech Recognition processing time:\nMean: {mean_speech_processing_time}s")
-            self.conversation_logger.info(f"Standard deviation: {standard_deviation_speech_processing_time}s")
 
-            # Calculating mean and standard deviation of ChatGPTs response time
-            # and also round the result to 3 decimal points
-            mean_gpt_response_time = round(statistics.mean(self.gpt_response_times), 3)
-            standard_deviation_gpt_response_time = round(statistics.stdev(self.gpt_response_times), 3)
-            self.conversation_logger.info(f"\nChatGPT API response time: \nMean: {mean_gpt_response_time}s")
-            self.conversation_logger.info(f"Standard deviaton: {standard_deviation_gpt_response_time}s")
+        # Calculating mean and standard deviation of the speech processing time
+        # and also round the result to 3 decimal points
+        mean_speech_processing_time = numpy.mean(numpy.array(self.speech_processing_times))
+        standard_deviation_speech_processing_time = numpy.std(numpy.array(self.speech_processing_times))
+        self.conversation_logger.info(f"Speech Recognition processing time:\nMean: {mean_speech_processing_time}s")
+        self.conversation_logger.info(f"Standard deviation: {standard_deviation_speech_processing_time}s")
 
-            # Calculating mean and standard deviation of TTS processing time
-            mean_tts_processing_time = statistics.mean(self.tts_processing_times)
-            standard_deviation_tts_processing_time = statistics.stdev(self.tts_processing_times)
-            self.conversation_logger.info(f"\nTTS processing time: \nMean: {mean_tts_processing_time}s")
-            self.conversation_logger.info(f"Standard deviaton: {standard_deviation_tts_processing_time}s")
+        # Calculating mean and standard deviation of ChatGPTs response time
+        # and also round the result to 3 decimal points
+        mean_gpt_response_time = round(numpy.mean(numpy.array(self.gpt_response_times)), 3)
+        standard_deviation_gpt_response_time = round(numpy.std(numpy.array(self.gpt_response_times)), 3)
+        self.conversation_logger.info(f"\nChatGPT API response time: \nMean: {mean_gpt_response_time}s")
+        self.conversation_logger.info(f"Standard deviaton: {standard_deviation_gpt_response_time}s")
+
+        # Calculating mean and standard deviation of TTS processing time
+        mean_tts_processing_time = numpy.mean(numpy.array(self.tts_processing_times))
+        standard_deviation_tts_processing_time = numpy.std(numpy.array(self.tts_processing_times))
+        self.conversation_logger.info(f"\nTTS processing time: \nMean: {mean_tts_processing_time}s")
+        self.conversation_logger.info(f"Standard deviaton: {standard_deviation_tts_processing_time}s")
 
     def send_display_emotion_request(self, desired_emotion):
         """
@@ -206,9 +206,16 @@ class Interaction(Node):
         self.send_change_voice_alteration_request(False)
 
         # Empty input for starting the conversation with ChatGPT
+        start = time.time()
         gpt_response = self.send_gpt_request()
+        end = time.time()
+        self.gpt_response_times.append(end - start)
+        
+        # Logging the response
         self.conversation_logger.info(f"Robot: {gpt_response.chatgpt_response}")
-        self.send_speak_request(gpt_response.chatgpt_response)
+
+        tts_response = self.send_speak_request(gpt_response.chatgpt_response)
+        self.tts_processing_times.append(tts_response.processing_time)
 
         # Number of sent messages to GPT
         conversation_length = 0
@@ -218,20 +225,18 @@ class Interaction(Node):
             # Trying to recognize user speech input
             speech_response = self.send_recognize_speech_request()
             self.send_display_emotion_request("surprise")
-            message = speech_response.recognized_speech
             
             # If successfully recognized speech input --> Send a request to ChatGPT
             # and use TTS for ChatGPTs response
             if speech_response.success:
                 self.speech_processing_times.append(speech_response.processing_time)
-                self.conversation_logger.info(f"User: {message}")
+                self.conversation_logger.info(f"User: {speech_response.recognized_speech}")
                 
                 # Measuring the response time of the request
                 start = time.time()
-                gpt_response = self.send_gpt_request(message)
+                gpt_response = self.send_gpt_request(speech_response.recognized_speech)
                 end = time.time()
-                response_time = end - start
-                self.gpt_response_times.append(response_time)
+                self.gpt_response_times.append(end - start)
 
                 # Logging ChatGPTs response
                 self.conversation_logger.info(f"Robot: {gpt_response.chatgpt_response}")
@@ -246,6 +251,7 @@ class Interaction(Node):
                 self.tts_processing_times.append(tts_response.processing_time)
 
         self.send_speak_request("Thank you for participating in this test. Have a wonderful day!")
+
 
 def main():
     rclpy.init()
