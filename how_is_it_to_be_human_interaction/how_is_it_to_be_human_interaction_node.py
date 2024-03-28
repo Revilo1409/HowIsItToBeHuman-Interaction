@@ -258,6 +258,7 @@ class Interaction(Node):
                 gpt_response = self.send_gpt_request(speech_response.recognized_speech)
                 end = time.time()
                 self.gpt_response_times.append(end - start)
+                self.conversation_logger.info(f"ChatGPT response time: {end - start}s")
 
                 # Logging ChatGPTs response
                 self.conversation_logger.info(f"Robot: {gpt_response.chatgpt_response}")
