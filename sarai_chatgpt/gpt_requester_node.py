@@ -177,8 +177,9 @@ class GPTRequester(Node):
             "role": "assistant",
             "content": request.error_message
         }
-        self.message_history.append(error_message)
         
+        self.message_history.append(error_message)
+
         return response
 
 
