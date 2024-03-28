@@ -58,6 +58,7 @@ class Interaction(Node):
         Called upon deletion of the class: calculate the means and standard deviations and 
         append it to the log file
         """
+
         self.conversation_logger.info("---")
 
         # Calculating mean and standard deviation of the speech processing time
@@ -222,7 +223,7 @@ class Interaction(Node):
         # Number of sent messages to GPT
         conversation_length = 0
 
-        while max_conversation_length == self.INFINITE_CONVERSATION | conversation_length < max_conversation_length:
+        while max_conversation_length == self.INFINITE_CONVERSATION or conversation_length < max_conversation_length:
 
             # Trying to recognize user speech input
             speech_response = self.send_recognize_speech_request()
