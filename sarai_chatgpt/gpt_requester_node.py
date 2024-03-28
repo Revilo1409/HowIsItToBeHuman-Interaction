@@ -5,7 +5,7 @@ from rcl_interfaces.msg import ParameterDescriptor
 
 from std_srvs.srv import Empty
 
-from sarai_msgs.srv import GPTRequest, GetGPTRequestParams
+from sarai_msgs.srv import GPTRequest, GetGPTRequestParams, UnsuccessfulSpeechRecognition
 
 from openai import OpenAI
 import os
@@ -13,6 +13,7 @@ import os
 
 class GPTRequester(Node):
     MODEL = "gpt-3.5-turbo-1106"
+    INFINITE_MESSAGE_HISTORY = -1
 
     def __init__(self):
         super().__init__("gptrequester")
@@ -22,6 +23,9 @@ class GPTRequester(Node):
 
         # Service for getting the necessary independant variables from the parameters
         self.get_gpt_request_params_srv = self.create_service(GetGPTRequestParams, "get_gpt_request_params", self.get_gpt_request_params_callback)
+
+        # Service for appending the unsuccessful speech recognition message to the message history
+        self.unsuccessful_speech_recognition_srv = self.create_service(UnsuccessfulSpeechRecognition, "unsuccessful_speech_recognition", self.unsuccessful_speech_recognition_callback)
 
         # Descriptor for api_key parameter
         api_key_descriptor = ParameterDescriptor(description="API Key for ChatGPT API")
@@ -49,7 +53,7 @@ class GPTRequester(Node):
         self.declare_parameter("chatgpt_persona", default_chatgpt_persona, chatgpt_persona_descriptor)
 
         # Parameter for setting the maximum number of messages in the history that should be sent to GPT
-        self.declare_parameter("max_window_messages", 100, max_window_messages_descriptor)
+        self.declare_parameter("max_window_messages", self.INFINITE_MESSAGE_HISTORY, max_window_messages_descriptor)
         
         # Parameter for setting the temperature in the ChatGPT API request
         self.declare_parameter("temperature", 0.7, temperature_descriptor)
@@ -83,6 +87,7 @@ class GPTRequester(Node):
             messages = [self.get_chatgpt_persona_message()]
         else:
             user_input_message = {"role": "user", "content": request.user_input}
+            self.message_history.append(user_input_message)
             messages = self.get_max_window_messages(user_input_message)
 
         chat = self.gpt_client.chat.completions.create(
@@ -99,8 +104,6 @@ class GPTRequester(Node):
         response.chatgpt_response = chatgpt_response
         response.success = True
 
-        if request.user_input:
-            self.message_history.append(user_input_message)
         self.message_history.append({"role": "assistant", "content": chatgpt_response})
 
         return response
@@ -112,13 +115,17 @@ class GPTRequester(Node):
 
         :param user_input: Message the user wants to send to GPT API
         :return: role_message, last max_window_messages of
-                message history and the user_input appended together
+                 message history and the user_input appended together
         """
 
         chatgpt_persona_message = self.get_chatgpt_persona_message()
         max_window_messages = self.get_parameter("max_window_messages").get_parameter_value().integer_value
-
-        last_max_window_messages = self.message_history[-max_window_messages:]
+        
+        # If max_window_messages = -1, use whole message history
+        if max_window_messages == self.INFINITE_MESSAGE_HISTORY:
+            last_max_window_messages = self.message_history
+        else:
+            last_max_window_messages = self.message_history[-max_window_messages:]
 
         # Prepends the chatgpt_persona_message
         last_max_window_messages.insert(0, chatgpt_persona_message)
@@ -145,14 +152,33 @@ class GPTRequester(Node):
     
     def get_gpt_request_params_callback(self, request, response):
         """
-        Service handler returning all parameters.
+        Service handler returning all the node's ROS2 parameters (except api_key).
 
-        :return: All parameters (but not api_key)
+        :param request: See GetGPTRequestParams service definition.
+        :param response: See GetGPTRequestParams service definition
         """
 
         response.chatgpt_persona = self.get_parameter("chatgpt_persona").get_parameter_value().string_value
         response.temperature = self.get_parameter("temperature").get_parameter_value().double_value
         response.max_window_messages = self.get_parameter("max_window_messages").get_parameter_value().integer_value
+
+        return response
+    
+    def unsuccessful_speech_recognition_callback(self, request, response):
+        """
+        Appends the error message to the message history, if the speech 
+        recognition wasn't successful.
+
+        :param request: See UnsuccessfulSpeechRecognition service definition.
+        :param response: See UnsuccessfulSpeechRecognition service definition
+        """
+
+        error_message =  {
+            "role": "assistant",
+            "content": request.error_message
+        }
+        
+        self.message_history.append(error_message)
 
         return response
 
