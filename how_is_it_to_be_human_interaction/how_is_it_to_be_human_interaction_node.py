@@ -2,7 +2,7 @@ import rclpy
 from rclpy.node import Node
 from rcl_interfaces.msg import ParameterDescriptor
 
-from sarai_msgs.srv import SetSpeech, GPTRequest, RecognizeSpeech, SetVoiceAlteration, GetGPTRequestParams
+from sarai_msgs.srv import SetSpeech, GPTRequest, RecognizeSpeech, SetVoiceAlteration, GetGPTRequestParams, UnsuccessfulSpeechRecognition
 
 from pixelbot_msgs.srv import DisplayEmotion
 
@@ -36,10 +36,13 @@ class Interaction(Node):
         # Create client to get parameters of gpt_requester
         self.get_gpt_request_params_cli = self.create_client(GetGPTRequestParams, 'get_gpt_request_params')
 
+        # Create a client for unsuccessful speech recognition
+        self.unsuccessful_speech_recognition_cli = self.create_client(UnsuccessfulSpeechRecognition, 'unsuccessful_speech_recognition')
+
         # Wait for clients to be ready
         for client in [self.gpt_request_cli, self.speak_cli, self.recognize_speech_cli, 
                        self.display_emotion_cli, self.change_voice_alteration_cli, 
-                       self.get_gpt_request_params_cli]:
+                       self.get_gpt_request_params_cli, self.unsuccessful_speech_recognition_cli]:
             while not client.wait_for_service(timeout_sec=1.0):
                 self.get_logger().info(f'{client.srv_name} service not available, waiting again...')
 
@@ -189,6 +192,21 @@ class Interaction(Node):
         
         self.conversation_logger.addHandler(handler)
 
+    def send_unsuccessful_speech_recognition_request(self, error_message):
+        """
+        Sends a request to the unsuccessful_speech_recognition service server.
+
+        :param error_message: String to set the error_message.
+        """
+
+        request = UnsuccessfulSpeechRecognition.Request()
+        request.error_message = error_message
+
+        self.future = self.unsuccessful_speech_recognition_cli.call_async(request)
+        rclpy.spin_until_future_complete(self, self.future)
+
+        return self.future.result()
+
     def interaction(self):
         """
         Main interaction.
@@ -225,8 +243,12 @@ class Interaction(Node):
 
         while max_conversation_length == self.INFINITE_CONVERSATION or conversation_length < max_conversation_length:
 
+            # Perform an emotion to let the user know that the robot is listening
+            self.send_display_emotion_request("happy")
+
             # Trying to recognize user speech input
             speech_response = self.send_recognize_speech_request()
+            # Perform an emotion to let the user know that the robot processed the speech
             self.send_display_emotion_request("surprise")
             
             # If successfully recognized speech input --> Send a request to ChatGPT
@@ -240,6 +262,7 @@ class Interaction(Node):
                 gpt_response = self.send_gpt_request(speech_response.recognized_speech)
                 end = time.time()
                 self.gpt_response_times.append(end - start)
+                self.conversation_logger.info(f"ChatGPT response time: {end - start}s")
 
                 # Logging ChatGPTs response
                 self.conversation_logger.info(f"Robot: {gpt_response.chatgpt_response}")
@@ -250,7 +273,13 @@ class Interaction(Node):
                 # Increment the back and forth messages counter
                 conversation_length += 1
             else:
-                tts_response = self.send_speak_request("Sorry, I did not understand you. Can you please repeat what you said?")
+                error_message = "Sorry, I did not understand you. Can you please repeat what you said?"
+                
+                # Adds the error_message to the message history
+                self.send_unsuccessful_speech_recognition_request(error_message)
+                self.conversation_logger.info(f"Robot: {error_message}")
+
+                tts_response = self.send_speak_request(error_message)
                 self.tts_processing_times.append(tts_response.processing_time)
 
         self.send_speak_request("Thank you for participating in this test. Have a wonderful day!")

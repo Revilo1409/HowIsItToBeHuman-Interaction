@@ -18,7 +18,8 @@ def generate_launch_description():
                  going nowhere, you have to provide something new to the topic.
                  You have some fundamental philosophical knowledge. Your 
                  responses have a maximum length of ca. 20 words.'''},
-                {'max_window_messages': 4},         
+                {'max_window_messages': -1},
+                {'temperature': 0.7}      
             ]
         ),
         Node(
