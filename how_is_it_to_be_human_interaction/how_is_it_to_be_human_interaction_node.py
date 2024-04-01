@@ -243,10 +243,12 @@ class Interaction(Node):
 
         while max_conversation_length == self.INFINITE_CONVERSATION or conversation_length < max_conversation_length:
 
+            # Perform an emotion to let the user know that the robot is listening
             self.send_display_emotion_request("happy")
 
             # Trying to recognize user speech input
             speech_response = self.send_recognize_speech_request()
+            # Perform an emotion to let the user know that the robot processed the speech
             self.send_display_emotion_request("surprise")
             
             # If successfully recognized speech input --> Send a request to ChatGPT
