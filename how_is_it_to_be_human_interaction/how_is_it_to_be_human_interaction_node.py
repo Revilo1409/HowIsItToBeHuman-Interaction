@@ -185,7 +185,7 @@ class Interaction(Node):
 
         # Creates a FileHandler, that handles log file creation for 
         # every new conversation, using the timestamp as a name
-        filename = time.strftime("%d_%m_%Y__%H.%M.%S.log")
+        filename = time.strftime("%m_%d_%Y__%H.%M.log")
         handler = logging.FileHandler(f"./thesis_logs/{filename}")
         handler.setLevel(logging.INFO)
         handler.setFormatter(formatter)
@@ -271,7 +271,7 @@ class Interaction(Node):
                 # Logging ChatGPTs response
                 self.conversation_logger.info(f"Robot: {gpt_response.chatgpt_response}")
 
-                self.conversation_logger.info("1. Does the robots response make sense, or is it confusing, illogical, out of context or out of the ordinary.\nMakes sense: Yes/No")
+                self.conversation_logger.info("1. Does the robots response make sense, or is it confusing, illogical, out of context or out of the ordinary?\nMakes sense: Yes/No")
                 self.conversation_logger.info("vv ONLY IF THE ABOVE IS TRUE vv")
                 self.conversation_logger.info("2. Is the response specific to the topic the conversation is about? \nYes/No\n")
 
