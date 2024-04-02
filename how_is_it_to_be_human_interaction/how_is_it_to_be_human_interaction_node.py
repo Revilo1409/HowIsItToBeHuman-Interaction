@@ -16,16 +16,16 @@ class Interaction(Node):
     INFINITE_CONVERSATION = -1
 
     def __init__(self):    
-        super().__init__("how_is_it_to_be_human_interaction_node")
+        super().__init__('how_is_it_to_be_human_interaction_node')
 
         # Create client to send a request to ChatGPT
-        self.gpt_request_cli = self.create_client(GPTRequest, "gpt_request")
+        self.gpt_request_cli = self.create_client(GPTRequest, 'gpt_request')
 
         # Create client to make PixelBot speak
-        self.speak_cli = self.create_client(SetSpeech, "speak")
+        self.speak_cli = self.create_client(SetSpeech, 'speak')
 
         # Create client to recognize speech
-        self.recognize_speech_cli = self.create_client(RecognizeSpeech, "recognize_speech")
+        self.recognize_speech_cli = self.create_client(RecognizeSpeech, 'recognize_speech')
 
         # Create client to perform emotion
         self.display_emotion_cli = self.create_client(DisplayEmotion, 'display_emotion')
@@ -52,7 +52,7 @@ class Interaction(Node):
         self.tts_processing_times = []
 
         max_conversation_length_descriptor = ParameterDescriptor(description="Number of back and forth messages")
-        self.declare_parameter("max_conversation_length", -1, max_conversation_length_descriptor)
+        self.declare_parameter('max_conversation_length', -1, max_conversation_length_descriptor)
 
         self.set_up_logger()
 
