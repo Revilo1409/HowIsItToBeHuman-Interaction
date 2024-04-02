@@ -211,7 +211,11 @@ class Interaction(Node):
         """
         Main interaction.
         """
-        
+
+        self.conversation_logger.info("Participant information:\n")
+        self.conversation_logger.info("Age: ")
+        self.conversation_logger.info("Gender: \nMale(M)/Female(F)/Divers(D)/Non-specified(N)\n ---")
+
         # Sends a request to get the parameter values of the GPTRequest node.
         # And then put all the parameters at the beginning of the log file.
         gpt_params = self.send_get_gpt_request_params_request()
