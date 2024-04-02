@@ -271,9 +271,9 @@ class Interaction(Node):
                 # Logging ChatGPTs response
                 self.conversation_logger.info(f"Robot: {gpt_response.chatgpt_response}")
 
-                self.conversation_logger.info("1. Does the robots response make sense, or is it confusing, illogical, out of context or out of the ordinary?\nMakes sense: Yes/No")
-                self.conversation_logger.info("vv ONLY IF THE ABOVE IS TRUE vv")
-                self.conversation_logger.info("2. Is the response specific to the topic the conversation is about? \nYes/No\n")
+                self.conversation_logger.info("\n1. Does the robots response make sense, or is it confusing, illogical, out of context or out of the ordinary?\nYes/No")
+                self.conversation_logger.info("ONLY ANSWER QUESTION 2. IF THE ANSWER TO 1. IS YES" )
+                self.conversation_logger.info("2. Is the response specific to the topic the conversation is about? \nYes/No \n\n")
 
                 tts_response = self.send_speak_request(gpt_response.chatgpt_response)
                 self.tts_processing_times.append(tts_response.processing_time)
