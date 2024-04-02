@@ -30,6 +30,9 @@ def generate_launch_description():
         Node(
             package='how_is_it_to_be_human_interaction',
             executable='how_is_it_to_be_human_interaction_node',
+            parameters=[
+                {'max_conversation_length': 30}
+            ]
         ),
         Node(
             package='sarai_speech_recognition',
