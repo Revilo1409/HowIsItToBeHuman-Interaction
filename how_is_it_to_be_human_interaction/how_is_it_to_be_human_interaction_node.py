@@ -297,13 +297,11 @@ def main():
     rclpy.init()
 
     interaction_node = Interaction()
-    try:
-        interaction_node.interaction()
-    except KeyboardInterrupt:
-        print("Bye!")
+    interaction_node.interaction()
 
     interaction_node.destroy_node()
     rclpy.shutdown()
+
 
 
 if __name__ == "__main__":
