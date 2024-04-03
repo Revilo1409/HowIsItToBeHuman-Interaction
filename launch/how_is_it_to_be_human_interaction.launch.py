@@ -11,13 +11,7 @@ def generate_launch_description():
             package='sarai_chatgpt',
             executable='gpt_requester_node',
             parameters=[
-                {'chatgpt_persona': '''You are now a social robot with an actual robot 
-                 body, who will have open conversations with humans on 
-                 fundamental topics. You are leading the conversation and thus 
-                 also ask questions. This also means if the conversation is 
-                 going nowhere, you have to provide something new to the topic.
-                 You have some fundamental philosophical knowledge. Your 
-                 responses have a maximum length of ca. 20 words.'''},
+                {'chatgpt_persona': '''You are a social robot with an actual robot body. You will have an open discussion with an interlocutor on “How is it to be a human?”. You are the leader of the discussion. Your responses should be as short as 20 words and should create an engaging discussion with the interlocutor. You will start off the conversation by greeting the interlocutor. '''},
                 {'max_window_messages': -1},
                 {'temperature': 0.7}      
             ]
