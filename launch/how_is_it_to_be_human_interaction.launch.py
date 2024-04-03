@@ -4,7 +4,20 @@ from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
 from launch.substitutions import TextSubstitution
 
+from launch.actions import (DeclareLaunchArgument, EmitEvent, ExecuteProcess,
+                            LogInfo, RegisterEventHandler, TimerAction)
+
+from launch.event_handlers import OnProcessExit
+from launch.events import Shutdown
+
 def generate_launch_description():
+    main_node = Node(
+            package='how_is_it_to_be_human_interaction',
+            executable='how_is_it_to_be_human_interaction_node',
+            parameters=[
+                {'max_conversation_length': 30}
+            ]
+        )
     return LaunchDescription(
         [
         Node(
@@ -21,13 +34,7 @@ def generate_launch_description():
             executable='sarai_tts_playsound_node'
             )
         ,
-        Node(
-            package='how_is_it_to_be_human_interaction',
-            executable='how_is_it_to_be_human_interaction_node',
-            parameters=[
-                {'max_conversation_length': 30}
-            ]
-        ),
+        main_node,
         Node(
             package='sarai_speech_recognition',
             executable= 'sarai_speech_recognition_node'
@@ -35,5 +42,14 @@ def generate_launch_description():
         Node(
             package='pixelbot_display',
             executable='pixelbot_display_node'
+        ),
+        RegisterEventHandler(
+            OnProcessExit(
+                target_action=main_node,
+                on_exit=[
+                    EmitEvent(event=Shutdown(
+                        reason='Window closed'))
+                ]
+            )
         )
     ])
