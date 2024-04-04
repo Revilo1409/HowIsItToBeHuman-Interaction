@@ -70,6 +70,7 @@ class Interaction(Node):
         standard_deviation_speech_processing_time = numpy.std(numpy.array(self.speech_processing_times))
         self.conversation_logger.info(f"Speech Recognition processing time:\nMean: {mean_speech_processing_time}s")
         self.conversation_logger.info(f"Standard deviation: {standard_deviation_speech_processing_time}s")
+        self.conversation_logger.info(f"All times: {self.speech_processing_times}")
 
         # Calculating mean and standard deviation of ChatGPTs response time
         # and also round the result to 3 decimal points
@@ -77,12 +78,14 @@ class Interaction(Node):
         standard_deviation_gpt_response_time = round(numpy.std(numpy.array(self.gpt_response_times)), 3)
         self.conversation_logger.info(f"\nChatGPT API response time: \nMean: {mean_gpt_response_time}s")
         self.conversation_logger.info(f"Standard deviaton: {standard_deviation_gpt_response_time}s")
+        self.conversation_logger.info(f"All times: {self.gpt_response_times}")
 
         # Calculating mean and standard deviation of TTS processing time
         mean_tts_processing_time = numpy.mean(numpy.array(self.tts_processing_times))
         standard_deviation_tts_processing_time = numpy.std(numpy.array(self.tts_processing_times))
         self.conversation_logger.info(f"\nTTS processing time: \nMean: {mean_tts_processing_time}s")
         self.conversation_logger.info(f"Standard deviaton: {standard_deviation_tts_processing_time}s")
+        self.conversation_logger.info(f"All times: {self.tts_processing_times}")
 
     def send_display_emotion_request(self, desired_emotion):
         """
@@ -266,14 +269,14 @@ class Interaction(Node):
                 gpt_response = self.send_gpt_request(speech_response.recognized_speech)
                 end = time.time()
                 self.gpt_response_times.append(end - start)
-                self.conversation_logger.info(f"ChatGPT response time: {end - start}s")
+                self.conversation_logger.info(f"Robot response time: {end - start}s")
 
                 # Logging ChatGPTs response
                 self.conversation_logger.info(f"Robot: {gpt_response.chatgpt_response}")
 
                 self.conversation_logger.info("\n1. Does the robots response make sense, or is it confusing, illogical, out of context or out of the ordinary?\nYes/No")
                 self.conversation_logger.info("ONLY ANSWER QUESTION 2. IF THE ANSWER TO 1. IS YES" )
-                self.conversation_logger.info("2. Is the response specific to the topic the conversation is about? \nYes/No \n\n")
+                self.conversation_logger.info("2. Is the response specific to the topic the conversation is about right now? \nYes/No \n\n")
 
                 tts_response = self.send_speak_request(gpt_response.chatgpt_response)
                 self.tts_processing_times.append(tts_response.processing_time)
