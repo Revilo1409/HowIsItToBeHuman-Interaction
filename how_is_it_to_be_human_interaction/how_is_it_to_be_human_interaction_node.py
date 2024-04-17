@@ -270,11 +270,16 @@ class Interaction(Node):
             # Perform an emotion to let the user know that the robot is listening
             self.send_display_emotion_request("happy")
 
+            # Trying to listen to user speech input
+            self.send_listen_request()
+
+            # Perform an emotion to let the user know that the robot stopped listening
+            self.send_display_emotion_request("surprise")
+
             # Trying to recognize user speech input
             speech_response = self.send_recognize_speech_request()
-            # Perform an emotion to let the user know that the robot processed the speech
-            self.send_display_emotion_request("surprise")
             
+
             # If successfully recognized speech input --> Send a request to ChatGPT
             # and use TTS for ChatGPTs response
             if speech_response.success:
