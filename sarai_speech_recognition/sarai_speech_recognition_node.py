@@ -1,6 +1,7 @@
 import rclpy
 from rclpy.node import Node
 
+from std_srvs.srv import Empty
 from sarai_msgs.srv import RecognizeSpeech
 
 import speech_recognition as sr
@@ -13,6 +14,9 @@ class Sarai_Speech_Recognition(Node):
 
     def __init__(self):
         super().__init__("sarai_speech_recognition_node")
+
+        # Service to listen to the microphone
+        self.listen_srv = self.create_service(Empty, "listen", self.listen_callback)
 
         # Service to perform speech recognition
         self.recognize_speech_srv = self.create_service(RecognizeSpeech, "recognize_speech", self.recognize_speech_callback)
@@ -32,9 +36,9 @@ class Sarai_Speech_Recognition(Node):
             # Default is 0.8
             self.speech_recognizer.pause_threshold = 1.5
 
-    def recognize_speech_callback(self, request, response):
+    def listen_callback(self, request, response):
         """
-        Service handler performing the speech recognition
+        Service handler listening until the speech is finished.
 
         :param request: See RecognizeSpeech service definition.
         :param response: See RecognizeSpeech service definition.
@@ -43,7 +47,14 @@ class Sarai_Speech_Recognition(Node):
         # Setting up microphone for Speech Recognition
         with sr.Microphone() as source:
             self.audio = self.speech_recognizer.listen(source, None)
+        
+    def recognize_speech_callback(self, request, response):
+        """
+        Service handler trying to recognize speech from the recorded audio
 
+        :param request: See RecognizeSpeech service definition.
+        :param response: See RecognizeSpeech service definition.
+        """
         try:
             start = time.time()
             response.recognized_speech = self.speech_recognizer.recognize_google(self.audio)
@@ -60,7 +71,7 @@ class Sarai_Speech_Recognition(Node):
             response.recognized_speech = "Could not request results from Google Speech Recognition service; {0}. Please try again!".format(error)
             response.success = False
             return response
-
+        
 
 def main(args=None):
     rclpy.init(args=args)
