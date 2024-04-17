@@ -2,6 +2,8 @@ import rclpy
 from rclpy.node import Node
 from rcl_interfaces.msg import ParameterDescriptor
 
+from std_srvs.srv import Empty
+
 from sarai_msgs.srv import SetSpeech, GPTRequest, RecognizeSpeech, SetVoiceAlteration, GetGPTRequestParams, UnsuccessfulSpeechRecognition
 
 from pixelbot_msgs.srv import DisplayEmotion
@@ -23,6 +25,9 @@ class Interaction(Node):
 
         # Create client to make PixelBot speak
         self.speak_cli = self.create_client(SetSpeech, 'speak')
+
+        # Create client to listen
+        self.listen_cli = self.create_client(Empty, 'listen')
 
         # Create client to recognize speech
         self.recognize_speech_cli = self.create_client(RecognizeSpeech, 'recognize_speech')
@@ -130,6 +135,18 @@ class Interaction(Node):
         request.message = gpt_response
 
         self.future = self.speak_cli.call_async(request)
+        rclpy.spin_until_future_complete(self, self.future)
+
+        return self.future.result()
+
+    def send_listen_request(self):
+        """
+        Send a request to the listen service server.
+        """
+
+        request = Empty.Request()
+
+        self.future = self.listen_cli.call_async(request)
         rclpy.spin_until_future_complete(self, self.future)
 
         return self.future.result()
