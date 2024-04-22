@@ -272,6 +272,7 @@ class Interaction(Node):
 
             # Trying to listen to user speech input
             self.send_listen_request()
+            
 
             # Perform an emotion to let the user know that the robot stopped listening
             self.send_display_emotion_request("surprise")
