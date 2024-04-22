@@ -48,6 +48,8 @@ class Sarai_Speech_Recognition(Node):
         with sr.Microphone() as source:
             self.audio = self.speech_recognizer.listen(source, None)
         
+        return response
+        
     def recognize_speech_callback(self, request, response):
         """
         Service handler trying to recognize speech from the recorded audio
