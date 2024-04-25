@@ -256,6 +256,10 @@ class Interaction(Node):
         end = time.time()
         self.gpt_response_times.append(end - start)
         
+        if not gpt_response.success:
+            self.conversation_logger.info("ERROR: %s",gpt_response.chatgpt_response, exc_info=1)
+            return
+
         # Logging the response
         self.conversation_logger.info(f"Robot: {gpt_response.chatgpt_response}")
 
@@ -273,7 +277,6 @@ class Interaction(Node):
             # Trying to listen to user speech input
             self.send_listen_request()
             
-
             # Perform an emotion to let the user know that the robot stopped listening
             self.send_display_emotion_request("surprise")
 
@@ -291,6 +294,11 @@ class Interaction(Node):
                 start = time.time()
                 gpt_response = self.send_gpt_request(speech_response.recognized_speech)
                 end = time.time()
+
+                if not gpt_response.success:
+                    self.conversation_logger.info("ERROR: %s",gpt_response.chatgpt_response, exc_info=1)
+                    return
+
                 self.gpt_response_times.append(end - start)
                 self.conversation_logger.info(f"Robot response time: {end - start}s")
 
@@ -323,7 +331,6 @@ def main():
 
     interaction_node.destroy_node()
     rclpy.shutdown()
-
 
 
 if __name__ == "__main__":
