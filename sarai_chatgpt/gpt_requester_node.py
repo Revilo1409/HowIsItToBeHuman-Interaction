@@ -7,6 +7,7 @@ from std_srvs.srv import Empty
 
 from sarai_msgs.srv import GPTRequest, GetGPTRequestParams, UnsuccessfulSpeechRecognition
 
+import openai
 from openai import OpenAI
 import os
 
@@ -90,13 +91,15 @@ class GPTRequester(Node):
             self.message_history.append(user_input_message)
             messages = self.get_max_window_messages(user_input_message)
 
-        chat = self.gpt_client.chat.completions.create(
+        try: 
+            chat = self.gpt_client.chat.completions.create(
             model=self.MODEL,
             messages=messages,
             temperature=temperature,
-        )
+            )
 
-        # TODO: Catch error from GPT response
+        except openai.APIConnectionError as error:
+            
 
         # By default, the API request creates one answer, but multiple could also
         # be given. We only create one.
