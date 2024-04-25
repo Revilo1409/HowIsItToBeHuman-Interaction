@@ -46,9 +46,16 @@ Allows to run the speech recognition.
 
 #### Services
 
+* **`listen`** ([std_srvs/Empty](http://docs.ros.org/en/noetic/api/std_srvs/html/srv/Empty.html))
+    
+    Listens to the microphone input until the user stops talking. Saves the recorded audio. For example:
+    ```
+    ros2 service call /listen std_srvs/Empty
+    ```
+
 * **`recognize_speech`** ([sarai_msgs/GPTRequest](https://gitlab.kit.edu/kit/iar/sarai/software/ros2/sarai-standalone/sarai_msgs/-/blob/main/srv/GPTRequest.srv))
         
-    Starts trying to recognize speech. If successful, returns the spoken text as a String. For example:
+    Tries to recognize speech from the already recorded audio. If successful, returns the spoken text as a String. For example:
     ```
     ros2 service call /recognize_speech sarai_msgs/RecognizeSpeech
     ```
