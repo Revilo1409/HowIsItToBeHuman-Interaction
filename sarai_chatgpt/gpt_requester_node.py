@@ -9,7 +9,7 @@ from sarai_msgs.srv import GPTRequest, GetGPTRequestParams, UnsuccessfulSpeechRe
 
 import openai
 from openai import OpenAI
-import os
+import os, time
 
 
 class GPTRequester(Node):
@@ -91,6 +91,8 @@ class GPTRequester(Node):
             self.message_history.append(user_input_message)
             messages = self.get_max_window_messages(user_input_message)
 
+        # Trying to make a call to the OpenAI API until it returns no error;
+        # Attempting again when it's a connection or rate limit error, max. 5 attempts
         for attempt in range(5):
             try: 
                 chat = self.gpt_client.chat.completions.create(
@@ -117,6 +119,7 @@ class GPTRequester(Node):
             except openai.RateLimitError as error:
                 response.success = False
                 response.chatgpt_response = f"Too many requests, slow down!"
+                time.sleep(3)
                 continue
 
             # By default, the API request creates one answer, but multiple could also
