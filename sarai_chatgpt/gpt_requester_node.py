@@ -90,16 +90,16 @@ class GPTRequester(Node):
             user_input_message = {"role": "user", "content": request.user_input}
             self.message_history.append(user_input_message)
             messages = self.get_max_window_messages(user_input_message)
+        for attempt in range(5):
+            try: 
+                chat = self.gpt_client.chat.completions.create(
+                model=self.MODEL,
+                messages=messages,
+                temperature=temperature,
+                )
 
-        try: 
-            chat = self.gpt_client.chat.completions.create(
-            model=self.MODEL,
-            messages=messages,
-            temperature=temperature,
-            )
+            except openai.APIConnectionError as error:
 
-        except openai.APIConnectionError as error:
-            
 
         # By default, the API request creates one answer, but multiple could also
         # be given. We only create one.
