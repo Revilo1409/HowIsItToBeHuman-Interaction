@@ -57,6 +57,7 @@ class Sarai_Speech_Recognition(Node):
         :param request: See RecognizeSpeech service definition.
         :param response: See RecognizeSpeech service definition.
         """
+        
         try:
             start = time.time()
             response.recognized_speech = self.speech_recognizer.recognize_google(self.audio)
