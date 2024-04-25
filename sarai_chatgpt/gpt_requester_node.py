@@ -90,6 +90,7 @@ class GPTRequester(Node):
             user_input_message = {"role": "user", "content": request.user_input}
             self.message_history.append(user_input_message)
             messages = self.get_max_window_messages(user_input_message)
+
         for attempt in range(5):
             try: 
                 chat = self.gpt_client.chat.completions.create(
@@ -99,15 +100,18 @@ class GPTRequester(Node):
                 )
 
             except openai.APIConnectionError as error:
+                response.success = False
+                response.chatgpt_response = f"Failed to connect to the API: {error}."
+                continue        
 
+            # By default, the API request creates one answer, but multiple could also
+            # be given. We only create one.
+            chatgpt_response = chat.choices[0].message.content
+            response.chatgpt_response = chatgpt_response
+            response.success = True
 
-        # By default, the API request creates one answer, but multiple could also
-        # be given. We only create one.
-        chatgpt_response = chat.choices[0].message.content
-        response.chatgpt_response = chatgpt_response
-        response.success = True
-
-        self.message_history.append({"role": "assistant", "content": chatgpt_response})
+            self.message_history.append({"role": "assistant", "content": chatgpt_response})
+            break
 
         return response
 
