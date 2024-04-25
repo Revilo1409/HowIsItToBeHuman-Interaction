@@ -87,7 +87,7 @@ class GPTRequester(Node):
             self.conversation_started = True
             messages = [self.get_chatgpt_persona_message()]
         else:
-            user_input_message = {"role": "user", "content": request.user_input}
+            user_input_message = {"role": "user", "connt": request.user_input}
             self.message_history.append(user_input_message)
             messages = self.get_max_window_messages(user_input_message)
 
@@ -102,7 +102,22 @@ class GPTRequester(Node):
             except openai.APIConnectionError as error:
                 response.success = False
                 response.chatgpt_response = f"Failed to connect to the API: {error}."
-                continue        
+                continue  
+
+            except openai.AuthenticationError:
+                response.success = False
+                response.chatgpt_response = f"Failed to authenticate, please check your API key!"
+                return response      
+            
+            except openai.BadRequestError as error:
+                response.success = False
+                response.chatgpt_response = f"Malformed request, check the format of your request: {error}"
+                return response
+            
+            except openai.RateLimitError as error:
+                response.success = False
+                response.chatgpt_response = f"Too many requests, slow down!"
+                continue
 
             # By default, the API request creates one answer, but multiple could also
             # be given. We only create one.
@@ -194,7 +209,6 @@ def main(args=None):
     rclpy.init(args=args)
 
     gpt_requester_node = GPTRequester()
-
     rclpy.spin(gpt_requester_node)
 
     gpt_requester_node.destroy_node()
