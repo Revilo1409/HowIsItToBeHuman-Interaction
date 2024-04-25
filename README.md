@@ -48,7 +48,7 @@ Allows to run the speech recognition.
 
 * **`listen`** ([std_srvs/Empty](http://docs.ros.org/en/noetic/api/std_srvs/html/srv/Empty.html))
     
-    Starts listening to microphone input and stops when the user stops talking. Saves the recorded audio. For examples:
+    Listens to the microphone input until the user stops talking. Saves the recorded audio. For example:
     ```
     ros2 service call /listen std_srvs/Empty
     ```
