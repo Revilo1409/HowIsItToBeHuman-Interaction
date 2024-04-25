@@ -87,49 +87,29 @@ class GPTRequester(Node):
             self.conversation_started = True
             messages = [self.get_chatgpt_persona_message()]
         else:
-            user_input_message = {"role": "user", "connt": request.user_input}
+            user_input_message = {"role": "user", "content": request.user_input}
             self.message_history.append(user_input_message)
             messages = self.get_max_window_messages(user_input_message)
 
-        # Trying to make a call to the OpenAI API until it returns no error;
-        # Attempting again when it's a connection or rate limit error, max. 5 attempts
-        for attempt in range(5):
-            try: 
-                chat = self.gpt_client.chat.completions.create(
-                model=self.MODEL,
-                messages=messages,
-                temperature=temperature,
-                )
+        try: 
+            chat = self.gpt_client.chat.completions.create(
+            model=self.MODEL,
+            messages=messages,
+            temperature=temperature,
+            )
 
-            except openai.APIConnectionError as error:
-                response.success = False
-                response.chatgpt_response = f"Failed to connect to the API: {error}."
-                continue  
+        except (openai.APIConnectionError, openai.AuthenticationError, openai.BadRequestError, openai.RateLimitError) as error:
+            response.success = False
+            response.chatgpt_response = f"Error when trying to access the API: {error}."
+            return response  
 
-            except openai.AuthenticationError:
-                response.success = False
-                response.chatgpt_response = f"Failed to authenticate, please check your API key!"
-                return response      
-            
-            except openai.BadRequestError as error:
-                response.success = False
-                response.chatgpt_response = f"Malformed request, check the format of your request: {error}"
-                return response
-            
-            except openai.RateLimitError as error:
-                response.success = False
-                response.chatgpt_response = f"Too many requests, slow down!"
-                time.sleep(3)
-                continue
+        # By default, the API request creates one answer, but multiple could also
+        # be given. We only create one.
+        chatgpt_response = chat.choices[0].message.content
+        response.chatgpt_response = chatgpt_response
+        response.success = True
 
-            # By default, the API request creates one answer, but multiple could also
-            # be given. We only create one.
-            chatgpt_response = chat.choices[0].message.content
-            response.chatgpt_response = chatgpt_response
-            response.success = True
-
-            self.message_history.append({"role": "assistant", "content": chatgpt_response})
-            break
+        self.message_history.append({"role": "assistant", "content": chatgpt_response})
 
         return response
 
