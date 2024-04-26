@@ -56,6 +56,7 @@ class Interaction(Node):
         self.speech_processing_times = []
         self.tts_processing_times = []
 
+        # Parameter for limiting the conversation length by number of back and forth messages
         max_conversation_length_descriptor = ParameterDescriptor(description="Number of back and forth messages")
         self.declare_parameter('max_conversation_length', -1, max_conversation_length_descriptor)
 
