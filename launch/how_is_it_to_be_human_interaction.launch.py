@@ -57,6 +57,10 @@ Now start off the conversation by greeting the other interlocutor
             executable= 'sarai_speech_recognition_node'
         ),
         Node(
+            package='pixelbot_motors',
+            executable='pixelbot_motors_node'
+        ),
+        Node(
             package='pixelbot_display',
             executable='pixelbot_display_node'
         ),
