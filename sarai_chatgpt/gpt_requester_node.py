@@ -9,7 +9,7 @@ from sarai_msgs.srv import GPTRequest, GetGPTRequestParams, UnsuccessfulSpeechRe
 
 import openai
 from openai import OpenAI
-import os, time
+import os
 
 
 class GPTRequester(Node):
@@ -95,7 +95,7 @@ class GPTRequester(Node):
             chat = self.gpt_client.chat.completions.create(
             model=self.MODEL,
             messages=messages,
-            temperature=temperature,
+            temperature=temperature
             )
 
         except (openai.APIConnectionError, openai.AuthenticationError, openai.BadRequestError, openai.RateLimitError) as error:
