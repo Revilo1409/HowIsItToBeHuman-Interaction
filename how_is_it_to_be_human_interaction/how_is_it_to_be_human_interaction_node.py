@@ -35,6 +35,9 @@ class Interaction(Node):
         # Create client to perform emotion
         self.display_emotion_cli = self.create_client(DisplayEmotion, 'display_emotion')
 
+        # Create client to perform antennae movements for emotions
+        self.emotion_antennae_movement_cli = self.create_client(DisplayEmotion, 'emotion_antennae_movement')
+
         # Create a client for setting the voice alteration
         self.change_voice_alteration_cli = self.create_client(SetVoiceAlteration, 'change_voice_alteration')
 
@@ -105,6 +108,22 @@ class Interaction(Node):
         self.request.desired_emotion = desired_emotion
 
         self.future = self.display_emotion_cli.call_async(self.request)
+        rclpy.spin_until_future_complete(self, self.future)
+
+        return self.future.result()
+    
+    def send_emotion_antennae_movement_request(self, desired_emotion):
+        """
+        Send a request to the emotion_antennae_movement service server.
+
+        :param desired_emotion: String to specify which emotion
+                                should be performed.
+        """
+
+        self.request = DisplayEmotion.Request()
+        self.request.desired_emotion = desired_emotion
+
+        self.future = self.emotion_antennae_movement_cli.call_async(self.request)
         rclpy.spin_until_future_complete(self, self.future)
 
         return self.future.result()
@@ -264,6 +283,8 @@ class Interaction(Node):
         # Logging the response
         self.conversation_logger.info(f"Robot: {gpt_response.chatgpt_response}")
 
+        self.send_emotion_antennae_movement_request("happy")
+
         tts_response = self.send_speak_request(gpt_response.chatgpt_response)
         self.tts_processing_times.append(tts_response.processing_time)
 
@@ -280,6 +301,8 @@ class Interaction(Node):
             
             # Perform an emotion to let the user know that the robot stopped listening
             self.send_display_emotion_request("surprise")
+
+            self.send_emotion_antennae_movement_request("happy")
 
             # Trying to recognize user speech input
             speech_response = self.send_recognize_speech_request()
