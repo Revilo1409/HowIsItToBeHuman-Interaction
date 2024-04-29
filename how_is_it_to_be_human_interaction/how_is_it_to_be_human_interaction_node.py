@@ -284,6 +284,7 @@ class Interaction(Node):
             # Trying to recognize user speech input
             speech_response = self.send_recognize_speech_request()
             
+            
 
             # If successfully recognized speech input --> Send a request to ChatGPT
             # and use TTS for ChatGPTs response
