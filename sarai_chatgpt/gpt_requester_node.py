@@ -93,10 +93,10 @@ class GPTRequester(Node):
 
         try: 
             chat = self.gpt_client.chat.completions.create(
-            model=self.MODEL,
-            messages=messages,
-            temperature=temperature
-            )
+                    model=self.MODEL,
+                    messages=messages,
+                    temperature=temperature
+                    )
 
         except (openai.APIConnectionError, openai.AuthenticationError, openai.BadRequestError, openai.RateLimitError) as error:
             response.success = False
