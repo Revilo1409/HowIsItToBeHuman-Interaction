@@ -192,6 +192,7 @@ def main(args=None):
     rclpy.init(args=args)
 
     gpt_requester_node = GPTRequester()
+    
     rclpy.spin(gpt_requester_node)
 
     gpt_requester_node.destroy_node()
