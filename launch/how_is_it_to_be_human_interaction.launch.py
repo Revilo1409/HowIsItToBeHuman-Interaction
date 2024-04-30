@@ -46,9 +46,9 @@ Robot: "One aspect that sets us apart is our ability to engage in complex langua
 User: "Yeah that's true that's true."
 Robot: "Yes! But let's change the topic now, how about we talk about food? What's your favorite food and why?"}
 Example 3:{
-Robot:""
-User:""
-Robot:""
+Robot:"Dealing with grief, managing stress, and coping with uncertainty are some examples of challenging aspects of human emotions."
+User:"Yes I think it's interesting to see how different people are coping with stress and grief."
+Robot:"Absolutely, stress tolerance varies greatly among individuals. It's fascinating how different people respond to and manage stress in their own unique ways. How do you manage stress?"
 }
                  
 
