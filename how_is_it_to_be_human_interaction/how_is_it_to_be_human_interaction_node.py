@@ -114,7 +114,7 @@ class Interaction(Node):
 
         return self.future.result()
     
-    def send_emotion_antennae_movement_request(self, body_parts, angles):
+    def send_motors_movement_request(self, body_parts, angles):
         """
         Send a request to the emotion_antennae_movement service server.
 
@@ -306,7 +306,7 @@ class Interaction(Node):
             # Trying to recognize user speech input
             speech_response = self.send_recognize_speech_request()
             
-            
+
 
             # If successfully recognized speech input --> Send a request to ChatGPT
             # and use TTS for ChatGPTs response
