@@ -6,7 +6,7 @@ from std_srvs.srv import Empty
 
 from sarai_msgs.srv import SetSpeech, GPTRequest, RecognizeSpeech, SetVoiceAlteration, GetGPTRequestParams, UnsuccessfulSpeechRecognition
 
-from pixelbot_msgs.srv import DisplayEmotion
+from pixelbot_msgs.srv import DisplayEmotion, MotorsMovement
 
 import logging, logging.handlers
 import time, numpy
@@ -37,7 +37,7 @@ class Interaction(Node):
         self.display_emotion_cli = self.create_client(DisplayEmotion, 'display_emotion')
 
         # Create client to perform antennae movements for emotions
-        self.emotion_antennae_movement_cli = self.create_client(DisplayEmotion, 'emotion_antennae_movement')
+        self.motors_movement_cli = self.create_client(MotorsMovement, 'motors_movement')
 
         # Create a client for setting the voice alteration
         self.change_voice_alteration_cli = self.create_client(SetVoiceAlteration, 'change_voice_alteration')
@@ -114,7 +114,7 @@ class Interaction(Node):
 
         return self.future.result()
     
-    def send_emotion_antennae_movement_request(self, desired_emotion):
+    def send_emotion_antennae_movement_request(self, body_parts, angles):
         """
         Send a request to the emotion_antennae_movement service server.
 
@@ -122,10 +122,11 @@ class Interaction(Node):
                                 should be performed.
         """
 
-        self.request = DisplayEmotion.Request()
-        self.request.desired_emotion = desired_emotion
+        self.request = MotorsMovement.Request()
+        self.request.body_parts = body_parts
+        self.request.angles = angles
 
-        self.future = self.emotion_antennae_movement_cli.call_async(self.request)
+        self.future = self.motors_movement_cli.call_async(self.request)
         rclpy.spin_until_future_complete(self, self.future)
 
         return self.future.result()
