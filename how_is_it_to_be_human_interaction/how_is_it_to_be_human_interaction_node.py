@@ -286,9 +286,6 @@ class Interaction(Node):
         # Logging the response
         self.conversation_logger.info(f"Robot: {gpt_response.chatgpt_response}")
 
-        if (random.random() < 0.3):
-         self.send_emotion_antennae_movement_request("happy")
-
         tts_response = self.send_speak_request(gpt_response.chatgpt_response)
         self.tts_processing_times.append(tts_response.processing_time)
 
@@ -305,9 +302,6 @@ class Interaction(Node):
             
             # Perform an emotion to let the user know that the robot stopped listening
             self.send_display_emotion_request("surprise")
-
-            if (random.random() < 0.3):
-                self.send_emotion_antennae_movement_request("happy")
 
             # Trying to recognize user speech input
             speech_response = self.send_recognize_speech_request()
