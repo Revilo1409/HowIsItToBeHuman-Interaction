@@ -297,6 +297,9 @@ class Interaction(Node):
 
         while max_conversation_length == self.INFINITE_CONVERSATION or conversation_length < max_conversation_length:
 
+            # Positioning the antennae both upwards when the robot is listening
+            self.send_motors_movement_request(['right_antenna', 'left_antenna'], [90, 90])
+
             # Perform an emotion to let the user know that the robot is listening
             self.send_display_emotion_request("happy")
 
