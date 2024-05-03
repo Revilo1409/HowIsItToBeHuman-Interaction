@@ -302,10 +302,10 @@ class Interaction(Node):
             # Positioning the antennae both upwards when the robot is listening
             self.send_motors_movement_request(['right_antenna', 'left_antenna'], [70, 110])
 
+            time.sleep(0.5)
+
             # Perform an emotion to let the user know that the robot is listening
             self.send_display_emotion_request("happy")
-
-            time.sleep(0.5)
 
             # Trying to listen to user speech input
             self.send_listen_request()
