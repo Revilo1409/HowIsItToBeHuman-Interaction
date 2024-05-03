@@ -347,7 +347,7 @@ class Interaction(Node):
                 # Increment the back and forth messages counter
                 conversation_length += 1
             else:
-                self.send_motors_movement_request([self.RIGHT_ANTENNA, self.LEFT_ANTENNA], [70, 110])
+                self.send_motors_movement_request([self.RIGHT_ANTENNA, self.LEFT_ANTENNA], [10, 170])
                 self.send_display_emotion_request("sad")
                 error_message = "Sorry, I did not understand you. Can you please repeat what you said?"
                 
