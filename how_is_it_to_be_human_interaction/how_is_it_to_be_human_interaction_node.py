@@ -286,7 +286,7 @@ class Interaction(Node):
         self.conversation_logger.info(f"Robot: {gpt_response.chatgpt_response}")
 
         # Positioning the antennae both pointed towards the middle when the robot is speaking
-        self.send_motors_movement_request(['right_antenna', 'left_antenna'], [60, 120])
+        self.send_motors_movement_request(['right_antenna', 'left_antenna'], [120, 60])
 
         tts_response = self.send_speak_request(gpt_response.chatgpt_response)
         self.tts_processing_times.append(tts_response.processing_time)
@@ -305,7 +305,7 @@ class Interaction(Node):
             # Trying to listen to user speech input
             self.send_listen_request()
             
-            # Positioning the antennae both pointed towards the middle when the robot is speaking
+            # Positioning the antennae bot to the left while the robot is thinking
             self.send_motors_movement_request(['right_antenna', 'left_antenna'], [60, 60])
 
             # Perform an emotion to let the user know that the robot stopped listening
@@ -338,7 +338,7 @@ class Interaction(Node):
                 self.conversation_logger.info(f"Robot: {gpt_response.chatgpt_response}")
 
                 # Positioning the antennae both pointed towards the middle when the robot is speaking
-                #self.send_motors_movement_request(['right_antenna', 'left_antenna'], [60, 120])
+                self.send_motors_movement_request(['right_antenna', 'left_antenna'], [120, 60])
 
                 tts_response = self.send_speak_request(gpt_response.chatgpt_response)
                 self.tts_processing_times.append(tts_response.processing_time)
