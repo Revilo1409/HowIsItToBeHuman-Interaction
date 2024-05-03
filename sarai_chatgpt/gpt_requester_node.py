@@ -7,6 +7,7 @@ from std_srvs.srv import Empty
 
 from sarai_msgs.srv import GPTRequest, GetGPTRequestParams, UnsuccessfulSpeechRecognition
 
+import openai
 from openai import OpenAI
 import os
 
@@ -90,13 +91,17 @@ class GPTRequester(Node):
             self.message_history.append(user_input_message)
             messages = self.get_max_window_messages(user_input_message)
 
-        chat = self.gpt_client.chat.completions.create(
-            model=self.MODEL,
-            messages=messages,
-            temperature=temperature,
-        )
+        try: 
+            chat = self.gpt_client.chat.completions.create(
+                    model=self.MODEL,
+                    messages=messages,
+                    temperature=temperature
+                    )
 
-        # TODO: Catch error from GPT response
+        except (openai.APIConnectionError, openai.AuthenticationError, openai.BadRequestError, openai.RateLimitError) as error:
+            response.success = False
+            response.chatgpt_response = f"Error when trying to access the API: {error}."
+            return response  
 
         # By default, the API request creates one answer, but multiple could also
         # be given. We only create one.
@@ -187,7 +192,7 @@ def main(args=None):
     rclpy.init(args=args)
 
     gpt_requester_node = GPTRequester()
-
+    
     rclpy.spin(gpt_requester_node)
 
     gpt_requester_node.destroy_node()
