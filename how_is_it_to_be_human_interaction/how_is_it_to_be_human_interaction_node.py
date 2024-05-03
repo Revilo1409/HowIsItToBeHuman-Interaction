@@ -134,6 +134,18 @@ class Interaction(Node):
 
         return self.future.result()
 
+    def send_hand_waving_request(self):
+        """
+        Send a request to the hand_waving service server
+        """
+
+        request = Empty.Request()
+
+        self.future = self.hand_waving_cli.call_async(request)
+        rclpy.spin_until_future_complete(self, self.future)
+
+        return self.future.result()
+
     def send_gpt_request(self, user_input=None):
         """
         Send a request to the gpt_request service server.
