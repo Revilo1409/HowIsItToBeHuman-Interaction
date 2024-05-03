@@ -7,6 +7,8 @@
   <maintainer email="Oliver.Aberle@student.kit.edu">oliver-aberle</maintainer>
   <license>Apache-2.0</license>
 
+  <depend>std_msgs</depend>
+
   <exec_depend>rclpy</exec_depend>
   <exec_depend>sarai_msgs</exec_depend>
   <exec_depend>pixelbot_msgs</exec_depend>

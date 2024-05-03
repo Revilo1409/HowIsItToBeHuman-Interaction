@@ -2,12 +2,15 @@ import rclpy
 from rclpy.node import Node
 from rcl_interfaces.msg import ParameterDescriptor
 
+from std_srvs.srv import Empty
+
 from sarai_msgs.srv import SetSpeech, GPTRequest, RecognizeSpeech, SetVoiceAlteration, GetGPTRequestParams, UnsuccessfulSpeechRecognition
 
-from pixelbot_msgs.srv import DisplayEmotion
+from pixelbot_msgs.srv import DisplayEmotion, MotorsMovement
 
 import logging, logging.handlers
 import time, numpy
+import random
 
 
 class Interaction(Node):
@@ -24,11 +27,17 @@ class Interaction(Node):
         # Create client to make PixelBot speak
         self.speak_cli = self.create_client(SetSpeech, 'speak')
 
+        # Create client to listen
+        self.listen_cli = self.create_client(Empty, 'listen')
+
         # Create client to recognize speech
         self.recognize_speech_cli = self.create_client(RecognizeSpeech, 'recognize_speech')
 
         # Create client to perform emotion
         self.display_emotion_cli = self.create_client(DisplayEmotion, 'display_emotion')
+
+        # Create client to perform antennae movements for emotions
+        self.motors_movement_cli = self.create_client(MotorsMovement, 'motors_movement')
 
         # Create a client for setting the voice alteration
         self.change_voice_alteration_cli = self.create_client(SetVoiceAlteration, 'change_voice_alteration')
@@ -42,7 +51,8 @@ class Interaction(Node):
         # Wait for clients to be ready
         for client in [self.gpt_request_cli, self.speak_cli, self.recognize_speech_cli, 
                        self.display_emotion_cli, self.change_voice_alteration_cli, 
-                       self.get_gpt_request_params_cli, self.unsuccessful_speech_recognition_cli]:
+                       self.get_gpt_request_params_cli, self.unsuccessful_speech_recognition_cli,
+                       self.motors_movement_cli]:
             while not client.wait_for_service(timeout_sec=1.0):
                 self.get_logger().info(f'{client.srv_name} service not available, waiting again...')
 
@@ -51,6 +61,7 @@ class Interaction(Node):
         self.speech_processing_times = []
         self.tts_processing_times = []
 
+        # Parameter for limiting the conversation length by number of back and forth messages
         max_conversation_length_descriptor = ParameterDescriptor(description="Number of back and forth messages")
         self.declare_parameter('max_conversation_length', -1, max_conversation_length_descriptor)
 
@@ -59,7 +70,7 @@ class Interaction(Node):
     def __del__(self):
         """
         Called upon deletion of the class: calculate the means and standard deviations and 
-        append it to the log file
+        append it to the log file; also position antennae into neutral again
         """
 
         self.conversation_logger.info("---")
@@ -87,6 +98,9 @@ class Interaction(Node):
         self.conversation_logger.info(f"Standard deviaton: {standard_deviation_tts_processing_time}s")
         self.conversation_logger.info(f"All times: {self.tts_processing_times}")
 
+        # Position antennae neutral again
+        self.send_motors_movement_request(['right_antenna', 'left_antenna'], [90, 90])
+
     def send_display_emotion_request(self, desired_emotion):
         """
         Send a request to the display_emotion service server.
@@ -99,6 +113,23 @@ class Interaction(Node):
         self.request.desired_emotion = desired_emotion
 
         self.future = self.display_emotion_cli.call_async(self.request)
+        rclpy.spin_until_future_complete(self, self.future)
+
+        return self.future.result()
+    
+    def send_motors_movement_request(self, body_parts, angles):
+        """
+        Send a request to the emotion_antennae_movement service server.
+
+        :param desired_emotion: String to specify which emotion
+                                should be performed.
+        """
+
+        self.request = MotorsMovement.Request()
+        self.request.body_parts = body_parts
+        self.request.angles = angles
+
+        self.future = self.motors_movement_cli.call_async(self.request)
         rclpy.spin_until_future_complete(self, self.future)
 
         return self.future.result()
@@ -130,6 +161,18 @@ class Interaction(Node):
         request.message = gpt_response
 
         self.future = self.speak_cli.call_async(request)
+        rclpy.spin_until_future_complete(self, self.future)
+
+        return self.future.result()
+
+    def send_listen_request(self):
+        """
+        Send a request to the listen service server.
+        """
+
+        request = Empty.Request()
+
+        self.future = self.listen_cli.call_async(request)
         rclpy.spin_until_future_complete(self, self.future)
 
         return self.future.result()
@@ -239,8 +282,15 @@ class Interaction(Node):
         end = time.time()
         self.gpt_response_times.append(end - start)
         
+        if not gpt_response.success:
+            self.conversation_logger.info("ERROR: %s",gpt_response.chatgpt_response, exc_info=1)
+            return
+
         # Logging the response
         self.conversation_logger.info(f"Robot: {gpt_response.chatgpt_response}")
+
+        # Positioning the antennae both pointed towards the middle when the robot is speaking
+        self.send_motors_movement_request(['right_antenna', 'left_antenna'], [100, 80])
 
         tts_response = self.send_speak_request(gpt_response.chatgpt_response)
         self.tts_processing_times.append(tts_response.processing_time)
@@ -250,14 +300,26 @@ class Interaction(Node):
 
         while max_conversation_length == self.INFINITE_CONVERSATION or conversation_length < max_conversation_length:
 
+            # Positioning the antennae both upwards when the robot is listening
+            self.send_motors_movement_request(['right_antenna', 'left_antenna'], [70, 110])
+
             # Perform an emotion to let the user know that the robot is listening
             self.send_display_emotion_request("happy")
 
+            # Trying to listen to user speech input
+            self.send_listen_request()
+            
+            # Positioning the antennae bot to the left while the robot is thinking
+            self.send_motors_movement_request(['right_antenna', 'left_antenna'], [60, 70])
+
+            # Perform an emotion to let the user know that the robot stopped listening
+            self.send_display_emotion_request("surprise")
+
             # Trying to recognize user speech input
             speech_response = self.send_recognize_speech_request()
-            # Perform an emotion to let the user know that the robot processed the speech
-            self.send_display_emotion_request("surprise")
             
+
+
             # If successfully recognized speech input --> Send a request to ChatGPT
             # and use TTS for ChatGPTs response
             if speech_response.success:
@@ -268,11 +330,19 @@ class Interaction(Node):
                 start = time.time()
                 gpt_response = self.send_gpt_request(speech_response.recognized_speech)
                 end = time.time()
+
+                if not gpt_response.success:
+                    self.conversation_logger.info("ERROR: %s",gpt_response.chatgpt_response, exc_info=1)
+                    return
+
                 self.gpt_response_times.append(end - start)
                 self.conversation_logger.info(f"Robot response time: {end - start}s")
 
                 # Logging ChatGPTs response
                 self.conversation_logger.info(f"Robot: {gpt_response.chatgpt_response}")
+
+                # Positioning the antennae both pointed towards the middle when the robot is speaking
+                self.send_motors_movement_request(['right_antenna', 'left_antenna'], [120, 60])
 
                 tts_response = self.send_speak_request(gpt_response.chatgpt_response)
                 self.tts_processing_times.append(tts_response.processing_time)
@@ -300,7 +370,6 @@ def main():
 
     interaction_node.destroy_node()
     rclpy.shutdown()
-
 
 
 if __name__ == "__main__":
