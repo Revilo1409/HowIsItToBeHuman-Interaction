@@ -16,6 +16,7 @@ class Interaction(Node):
     
     # Defines
     INFINITE_CONVERSATION = -1
+    RIGHT_ANTENNA, LEFT_ANTENNA = "right_antenna", "left_antenna"
 
     def __init__(self):    
         super().__init__('how_is_it_to_be_human_interaction_node')
@@ -349,6 +350,8 @@ class Interaction(Node):
                 # Increment the back and forth messages counter
                 conversation_length += 1
             else:
+                self.send_motors_movement_request(['right'])
+                self.send_display_emotion_request("sad")
                 error_message = "Sorry, I did not understand you. Can you please repeat what you said?"
                 
                 # Adds the error_message to the message history
