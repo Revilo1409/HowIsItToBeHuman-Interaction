@@ -304,9 +304,6 @@ class Interaction(Node):
         # Positioning the antennae both pointed towards the middle when the robot is speaking
         self.send_motors_movement_request(['right_antenna', 'left_antenna'], [100, 80])
 
-        # Greet the user by waving the hand
-        self.send_hand_waving_request()
-
         tts_response = self.send_speak_request(gpt_response.chatgpt_response)
         self.tts_processing_times.append(tts_response.processing_time)
 
