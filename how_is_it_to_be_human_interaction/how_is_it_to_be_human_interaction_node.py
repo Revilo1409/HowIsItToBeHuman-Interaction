@@ -98,9 +98,6 @@ class Interaction(Node):
         self.conversation_logger.info(f"Standard deviaton: {standard_deviation_tts_processing_time}s")
         self.conversation_logger.info(f"All times: {self.tts_processing_times}")
 
-        # Position antennae neutral again
-        self.send_motors_movement_request(['right_antenna', 'left_antenna'], [90, 90])
-
     def send_display_emotion_request(self, desired_emotion):
         """
         Send a request to the display_emotion service server.
