@@ -39,9 +39,6 @@ class Interaction(Node):
         # Create client to perform antennae movements for emotions
         self.motors_movement_cli = self.create_client(MotorsMovement, 'motors_movement')
 
-        # Create client to perform hand waving gesture
-        self.hand_waving_cli = self.create_client(Empty, 'hand_waving')
-
         # Create a client for setting the voice alteration
         self.change_voice_alteration_cli = self.create_client(SetVoiceAlteration, 'change_voice_alteration')
 
