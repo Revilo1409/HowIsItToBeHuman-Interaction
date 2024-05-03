@@ -70,7 +70,7 @@ class Interaction(Node):
     def __del__(self):
         """
         Called upon deletion of the class: calculate the means and standard deviations and 
-        append it to the log file
+        append it to the log file; also position antennae into neutral again
         """
 
         self.conversation_logger.info("---")
@@ -97,6 +97,9 @@ class Interaction(Node):
         self.conversation_logger.info(f"\nTTS processing time: \nMean: {mean_tts_processing_time}s")
         self.conversation_logger.info(f"Standard deviaton: {standard_deviation_tts_processing_time}s")
         self.conversation_logger.info(f"All times: {self.tts_processing_times}")
+
+        # Position antennae neutral again
+        self.send_motors_movement_request(['right_antenna', 'left_antenna'], [90, 90])
 
     def send_display_emotion_request(self, desired_emotion):
         """
