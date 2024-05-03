@@ -10,7 +10,6 @@ from pixelbot_msgs.srv import DisplayEmotion, MotorsMovement
 
 import logging, logging.handlers
 import time, numpy
-import random
 
 
 class Interaction(Node):
