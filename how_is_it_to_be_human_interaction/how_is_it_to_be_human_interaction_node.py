@@ -287,7 +287,7 @@ class Interaction(Node):
         self.conversation_logger.info(f"Robot: {gpt_response.chatgpt_response}")
 
         # Positioning the antennae both pointed towards the middle when the robot is speaking
-        self.send_motors_movement_request(['right_antenna', 'left_antenna'], [100, 80])
+        self.send_motors_movement_request([self.RIGHT_ANTENNA, self.LEFT_ANTENNA], [100, 80])
 
         tts_response = self.send_speak_request(gpt_response.chatgpt_response)
         self.tts_processing_times.append(tts_response.processing_time)
@@ -298,7 +298,7 @@ class Interaction(Node):
         while max_conversation_length == self.INFINITE_CONVERSATION or conversation_length < max_conversation_length:
 
             # Positioning the antennae both upwards when the robot is listening
-            self.send_motors_movement_request(['right_antenna', 'left_antenna'], [70, 110])
+            self.send_motors_movement_request([self.RIGHT_ANTENNA, self.LEFT_ANTENNA], [70, 110])
 
             time.sleep(0.5)
 
@@ -309,7 +309,7 @@ class Interaction(Node):
             self.send_listen_request()
             
             # Positioning the antennae bot to the left while the robot is thinking
-            self.send_motors_movement_request(['right_antenna', 'left_antenna'], [60, 70])
+            self.send_motors_movement_request([self.RIGHT_ANTENNA, self.LEFT_ANTENNA], [60, 70])
 
             # Perform an emotion to let the user know that the robot stopped listening
             self.send_display_emotion_request("surprise")
@@ -339,7 +339,7 @@ class Interaction(Node):
                 self.conversation_logger.info(f"Robot: {gpt_response.chatgpt_response}")
 
                 # Positioning the antennae both pointed towards the middle when the robot is speaking
-                self.send_motors_movement_request(['right_antenna', 'left_antenna'], [100, 80])
+                self.send_motors_movement_request([self.RIGHT_ANTENNA, self.LEFT_ANTENNA], [100, 80])
 
                 tts_response = self.send_speak_request(gpt_response.chatgpt_response)
                 self.tts_processing_times.append(tts_response.processing_time)
@@ -347,7 +347,7 @@ class Interaction(Node):
                 # Increment the back and forth messages counter
                 conversation_length += 1
             else:
-                self.send_motors_movement_request(['right'])
+                self.send_motors_movement_request([self.RIGHT_ANTENNA, self.LEFT_ANTENNA], [70, 110])
                 self.send_display_emotion_request("sad")
                 error_message = "Sorry, I did not understand you. Can you please repeat what you said?"
                 
