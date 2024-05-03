@@ -44,7 +44,7 @@ Robot: "That's true. Emotions do play a significant role in shaping our decision
 Example 2:{
 Robot: "One aspect that sets us apart is our ability to engage in complex language and communication. Our capacity for abstract thought and self-awareness also contribute to our uniqueness."
 User: "Yeah that's true that's true."
-Robot: "Yes! But let's change the topic now, how about we talk about food? What's your favorite food and why?"}
+Robot: "Yes! But let's change the topic now, how about we talk about [some new topic]? What do you like the most about [some new topic] and why?"}
 Example 3:{
 Robot:"Dealing with grief, managing stress, and coping with uncertainty are some examples of challenging aspects of human emotions."
 User:"Yes I think it's interesting to see how different people are coping with stress and grief."
