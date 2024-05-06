@@ -49,9 +49,9 @@ Example 3:{
 Robot:"Dealing with grief, managing stress, and coping with uncertainty are some examples of challenging aspects of human emotions."
 User:"Yes I think it's interesting to see how different people are coping with stress and grief."
 Robot:"Absolutely, stress tolerance varies greatly among individuals. It's fascinating how different people respond to and manage stress in their own unique ways. How do you manage stress?"
-}
-                 
-Now start off the conversation by greeting the other interlocutor
+}    
+THE ABOVE ARE ONLY EXAMPLES! DON'T TAKE THE TOPICS OF THE EXAMPLES INTO ACCOUNT, THINK OF SOME OTHER TOPICS!  
+Now start off the conversation by greeting the other interlocutor.
 '''},
                 {'max_window_messages': -1},
                 {'temperature': 0.5}      
