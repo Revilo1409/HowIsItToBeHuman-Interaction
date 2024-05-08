@@ -88,9 +88,8 @@ class GPTRequester(Node):
             messages = [self.get_chatgpt_persona_message()]
         else:
             user_input_message = {"role": "user", "content": request.user_input}
-            self.message_history.append(user_input_message)
             messages = self.get_max_window_messages(user_input_message)
-
+            self.message_history.append(user_input_message)
 
         chat = self.gpt_client.chat.completions.create(
                 model=self.MODEL,
