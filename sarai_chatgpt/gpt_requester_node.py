@@ -122,9 +122,9 @@ class GPTRequester(Node):
         
         # If max_window_messages = -1, use whole message history
         if max_window_messages == self.INFINITE_MESSAGE_HISTORY:
-            last_max_window_messages = self.message_history
+            last_max_window_messages = self.message_history.copy()
         else:
-            last_max_window_messages = self.message_history[-max_window_messages:]
+            last_max_window_messages = self.message_history[-max_window_messages:].copy()
 
         # Prepends the chatgpt_persona_message
         last_max_window_messages.insert(0, chatgpt_persona_message)
