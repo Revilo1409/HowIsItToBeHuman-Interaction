@@ -91,17 +91,12 @@ class GPTRequester(Node):
             self.message_history.append(user_input_message)
             messages = self.get_max_window_messages(user_input_message)
 
-        try: 
-            chat = self.gpt_client.chat.completions.create(
-                    model=self.MODEL,
-                    messages=messages,
-                    temperature=temperature
-                    )
 
-        except (openai.APIConnectionError, openai.AuthenticationError, openai.BadRequestError, openai.RateLimitError) as error:
-            response.success = False
-            response.chatgpt_response = f"Error when trying to access the API: {error}."
-            return response  
+        chat = self.gpt_client.chat.completions.create(
+                model=self.MODEL,
+                messages=messages,
+                temperature=temperature
+                )
 
         # By default, the API request creates one answer, but multiple could also
         # be given. We only create one.
