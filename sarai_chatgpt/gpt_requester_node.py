@@ -88,20 +88,14 @@ class GPTRequester(Node):
             messages = [self.get_chatgpt_persona_message()]
         else:
             user_input_message = {"role": "user", "content": request.user_input}
-            self.message_history.append(user_input_message)
             messages = self.get_max_window_messages(user_input_message)
+            self.message_history.append(user_input_message)
 
-        try: 
-            chat = self.gpt_client.chat.completions.create(
-                    model=self.MODEL,
-                    messages=messages,
-                    temperature=temperature
-                    )
-
-        except (openai.APIConnectionError, openai.AuthenticationError, openai.BadRequestError, openai.RateLimitError) as error:
-            response.success = False
-            response.chatgpt_response = f"Error when trying to access the API: {error}."
-            return response  
+        chat = self.gpt_client.chat.completions.create(
+                model=self.MODEL,
+                messages=messages,
+                temperature=temperature
+                )
 
         # By default, the API request creates one answer, but multiple could also
         # be given. We only create one.
@@ -128,9 +122,9 @@ class GPTRequester(Node):
         
         # If max_window_messages = -1, use whole message history
         if max_window_messages == self.INFINITE_MESSAGE_HISTORY:
-            last_max_window_messages = self.message_history
+            last_max_window_messages = self.message_history.copy()
         else:
-            last_max_window_messages = self.message_history[-max_window_messages:]
+            last_max_window_messages = self.message_history[-max_window_messages:].copy()
 
         # Prepends the chatgpt_persona_message
         last_max_window_messages.insert(0, chatgpt_persona_message)
