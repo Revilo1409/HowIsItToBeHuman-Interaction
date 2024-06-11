@@ -1,0 +1,4 @@
+string[<=4] body_parts
+uint8[<=4] angles
+---
+bool success
