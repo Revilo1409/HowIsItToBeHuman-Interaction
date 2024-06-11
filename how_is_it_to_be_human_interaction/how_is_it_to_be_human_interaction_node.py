@@ -3,9 +3,7 @@ from rclpy.node import Node
 from rcl_interfaces.msg import ParameterDescriptor
 
 from std_srvs.srv import Empty
-
 from sarai_msgs.srv import SetSpeech, GPTRequest, RecognizeSpeech, SetVoiceAlteration, GetGPTRequestParams, UnsuccessfulSpeechRecognition
-
 from pixelbot_msgs.srv import DisplayEmotion, MotorsMovement
 
 import logging, logging.handlers
