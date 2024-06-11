@@ -250,7 +250,7 @@ class Interaction(Node):
 
     def interaction(self):
         """
-        Main interaction.
+        Main interaction, taking care of the conversational flow.
         """
 
         self.conversation_logger.info("Participant information:\n")
