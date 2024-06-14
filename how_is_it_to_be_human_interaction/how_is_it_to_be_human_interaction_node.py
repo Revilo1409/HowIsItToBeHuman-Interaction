@@ -354,6 +354,7 @@ def main():
     rclpy.init()
 
     interaction_node = Interaction()
+    
     interaction_node.interaction()
 
     interaction_node.destroy_node()
