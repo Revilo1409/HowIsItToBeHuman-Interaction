@@ -62,7 +62,6 @@ Now start off the conversation by greeting the other interlocutor.
             executable='sarai_tts_playsound_node'
             )
         ,
-        main_node,
         Node(
             package='sarai_speech_recognition',
             executable= 'sarai_speech_recognition_node'
@@ -75,9 +74,10 @@ Now start off the conversation by greeting the other interlocutor.
             package='pixelbot_display',
             executable='pixelbot_display_node'
         ),
+        main_interaction_node,
         RegisterEventHandler(
             OnProcessExit(
-                target_action=main_node,
+                target_action=main_interaction_node,
                 on_exit=[
                     EmitEvent(event=Shutdown(
                         reason='Window closed'))
