@@ -114,10 +114,11 @@ class Interaction(Node):
     
     def send_motors_movement_request(self, body_parts, angles):
         """
-        Send a request to the emotion_antennae_movement service server.
+        Send a request to the motors_movement service server.
 
-        :param desired_emotion: String to specify which emotion
-                                should be performed.
+        :param body_parts: List of body parts to be moved.
+        :param angles: List of corresponding angle positions the body parts should
+                       be moved to
         """
 
         self.request = MotorsMovement.Request()
