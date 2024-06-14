@@ -47,10 +47,10 @@ class Interaction(Node):
         self.unsuccessful_speech_recognition_cli = self.create_client(UnsuccessfulSpeechRecognition, 'unsuccessful_speech_recognition')
 
         # Wait for clients to be ready
-        for client in [self.gpt_request_cli, self.speak_cli, self.recognize_speech_cli, 
-                       self.display_emotion_cli, self.change_voice_alteration_cli, 
-                       self.get_gpt_request_params_cli, self.unsuccessful_speech_recognition_cli,
-                       self.motors_movement_cli]:
+        for client in [self.gpt_request_cli, self.speak_cli, self.listen_cli, 
+                       self.recognize_speech_cli, self.display_emotion_cli, 
+                       self.change_voice_alteration_cli, self.get_gpt_request_params_cli, 
+                       self.unsuccessful_speech_recognition_cli, self.motors_movement_cli]:
             while not client.wait_for_service(timeout_sec=1.0):
                 self.get_logger().info(f'{client.srv_name} service not available, waiting again...')
 
