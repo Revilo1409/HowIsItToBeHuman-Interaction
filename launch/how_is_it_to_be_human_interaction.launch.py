@@ -7,7 +7,7 @@ from launch.event_handlers import OnProcessExit
 from launch.events import Shutdown
 
 def generate_launch_description():
-    main_node = Node(
+    main_interaction_node = Node(
             package='how_is_it_to_be_human_interaction',
             executable='how_is_it_to_be_human_interaction_node',
             parameters=[
