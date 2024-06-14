@@ -61,7 +61,7 @@ class Interaction(Node):
 
         # Parameter for limiting the conversation length by number of back and forth messages
         max_conversation_length_descriptor = ParameterDescriptor(description="Number of back and forth messages")
-        self.declare_parameter('max_conversation_length', -1, max_conversation_length_descriptor)
+        self.declare_parameter('max_conversation_length', self.INFINITE_CONVERSATION, max_conversation_length_descriptor)
 
         self.set_up_logger()
 
