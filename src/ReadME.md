@@ -42,6 +42,7 @@ sudo reboot
 - **[sarai_chatgpt](https://github.com/Revilo1409/HowIsItToBeHuman-Interaction/tree/main/src/sarai_chatgpt)**: Allows to communicate with OpenAI's GPT-3.5.
 - **[sarai_msgs](https://github.com/Revilo1409/HowIsItToBeHuman-Interaction/tree/main/src/sarai_msgs)**: Custom message and service headers used by the packages of SARAI.
 
+Below is a diagram of how all the nodes of the packages interact with each other:
 <img src="/imgs/Nodes.png">
 
 ## Build
