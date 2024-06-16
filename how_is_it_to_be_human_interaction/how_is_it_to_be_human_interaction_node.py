@@ -2,9 +2,9 @@ import rclpy
 from rclpy.node import Node
 from rcl_interfaces.msg import ParameterDescriptor
 
+from std_srvs.srv import Empty
 from sarai_msgs.srv import SetSpeech, GPTRequest, RecognizeSpeech, SetVoiceAlteration, GetGPTRequestParams, UnsuccessfulSpeechRecognition
-
-from pixelbot_msgs.srv import DisplayEmotion
+from pixelbot_msgs.srv import DisplayEmotion, MotorsMovement
 
 import logging, logging.handlers
 import time, numpy
@@ -14,6 +14,7 @@ class Interaction(Node):
     
     # Defines
     INFINITE_CONVERSATION = -1
+    RIGHT_ANTENNA, LEFT_ANTENNA = "right_antenna", "left_antenna"
 
     def __init__(self):    
         super().__init__('how_is_it_to_be_human_interaction_node')
@@ -24,11 +25,17 @@ class Interaction(Node):
         # Create client to make PixelBot speak
         self.speak_cli = self.create_client(SetSpeech, 'speak')
 
+        # Create client to listen
+        self.listen_cli = self.create_client(Empty, 'listen')
+
         # Create client to recognize speech
         self.recognize_speech_cli = self.create_client(RecognizeSpeech, 'recognize_speech')
 
         # Create client to perform emotion
         self.display_emotion_cli = self.create_client(DisplayEmotion, 'display_emotion')
+
+        # Create client to perform antennae movements for emotions
+        self.motors_movement_cli = self.create_client(MotorsMovement, 'motors_movement')
 
         # Create a client for setting the voice alteration
         self.change_voice_alteration_cli = self.create_client(SetVoiceAlteration, 'change_voice_alteration')
@@ -40,9 +47,10 @@ class Interaction(Node):
         self.unsuccessful_speech_recognition_cli = self.create_client(UnsuccessfulSpeechRecognition, 'unsuccessful_speech_recognition')
 
         # Wait for clients to be ready
-        for client in [self.gpt_request_cli, self.speak_cli, self.recognize_speech_cli, 
-                       self.display_emotion_cli, self.change_voice_alteration_cli, 
-                       self.get_gpt_request_params_cli, self.unsuccessful_speech_recognition_cli]:
+        for client in [self.gpt_request_cli, self.speak_cli, self.listen_cli, 
+                       self.recognize_speech_cli, self.display_emotion_cli, 
+                       self.change_voice_alteration_cli, self.get_gpt_request_params_cli, 
+                       self.unsuccessful_speech_recognition_cli, self.motors_movement_cli]:
             while not client.wait_for_service(timeout_sec=1.0):
                 self.get_logger().info(f'{client.srv_name} service not available, waiting again...')
 
@@ -51,15 +59,16 @@ class Interaction(Node):
         self.speech_processing_times = []
         self.tts_processing_times = []
 
+        # Parameter for limiting the conversation length by number of back and forth messages
         max_conversation_length_descriptor = ParameterDescriptor(description="Number of back and forth messages")
-        self.declare_parameter('max_conversation_length', 30, max_conversation_length_descriptor)
+        self.declare_parameter('max_conversation_length', self.INFINITE_CONVERSATION, max_conversation_length_descriptor)
 
         self.set_up_logger()
 
     def __del__(self):
         """
         Called upon deletion of the class: calculate the means and standard deviations and 
-        append it to the log file
+        append it to the log file; also position antennae into neutral again
         """
 
         self.conversation_logger.info("---")
@@ -70,6 +79,7 @@ class Interaction(Node):
         standard_deviation_speech_processing_time = numpy.std(numpy.array(self.speech_processing_times))
         self.conversation_logger.info(f"Speech Recognition processing time:\nMean: {mean_speech_processing_time}s")
         self.conversation_logger.info(f"Standard deviation: {standard_deviation_speech_processing_time}s")
+        self.conversation_logger.info(f"All times: {self.speech_processing_times}")
 
         # Calculating mean and standard deviation of ChatGPTs response time
         # and also round the result to 3 decimal points
@@ -77,12 +87,14 @@ class Interaction(Node):
         standard_deviation_gpt_response_time = round(numpy.std(numpy.array(self.gpt_response_times)), 3)
         self.conversation_logger.info(f"\nChatGPT API response time: \nMean: {mean_gpt_response_time}s")
         self.conversation_logger.info(f"Standard deviaton: {standard_deviation_gpt_response_time}s")
+        self.conversation_logger.info(f"All times: {self.gpt_response_times}")
 
         # Calculating mean and standard deviation of TTS processing time
         mean_tts_processing_time = numpy.mean(numpy.array(self.tts_processing_times))
         standard_deviation_tts_processing_time = numpy.std(numpy.array(self.tts_processing_times))
         self.conversation_logger.info(f"\nTTS processing time: \nMean: {mean_tts_processing_time}s")
         self.conversation_logger.info(f"Standard deviaton: {standard_deviation_tts_processing_time}s")
+        self.conversation_logger.info(f"All times: {self.tts_processing_times}")
 
     def send_display_emotion_request(self, desired_emotion):
         """
@@ -96,6 +108,24 @@ class Interaction(Node):
         self.request.desired_emotion = desired_emotion
 
         self.future = self.display_emotion_cli.call_async(self.request)
+        rclpy.spin_until_future_complete(self, self.future)
+
+        return self.future.result()
+    
+    def send_motors_movement_request(self, body_parts, angles):
+        """
+        Send a request to the motors_movement service server.
+
+        :param body_parts: List of body parts to be moved.
+        :param angles: List of corresponding angle positions the body parts should
+                       be moved to
+        """
+
+        self.request = MotorsMovement.Request()
+        self.request.body_parts = body_parts
+        self.request.angles = angles
+
+        self.future = self.motors_movement_cli.call_async(self.request)
         rclpy.spin_until_future_complete(self, self.future)
 
         return self.future.result()
@@ -127,6 +157,18 @@ class Interaction(Node):
         request.message = gpt_response
 
         self.future = self.speak_cli.call_async(request)
+        rclpy.spin_until_future_complete(self, self.future)
+
+        return self.future.result()
+
+    def send_listen_request(self):
+        """
+        Send a request to the listen service server.
+        """
+
+        request = Empty.Request()
+
+        self.future = self.listen_cli.call_async(request)
         rclpy.spin_until_future_complete(self, self.future)
 
         return self.future.result()
@@ -185,7 +227,7 @@ class Interaction(Node):
 
         # Creates a FileHandler, that handles log file creation for 
         # every new conversation, using the timestamp as a name
-        filename = time.strftime("%d_%m_%Y__%H.%M.%S.log")
+        filename = time.strftime("%m_%d_%Y__%H.%M.log")
         handler = logging.FileHandler(f"./thesis_logs/{filename}")
         handler.setLevel(logging.INFO)
         handler.setFormatter(formatter)
@@ -209,19 +251,23 @@ class Interaction(Node):
 
     def interaction(self):
         """
-        Main interaction.
+        Main interaction, taking care of the conversational flow.
         """
-        
+
+        self.conversation_logger.info("Participant information:\n")
+        self.conversation_logger.info("Age: ")
+        self.conversation_logger.info("Gender: \nMale(M)/Female(F)/Divers(D)/Non-specified(N)\n---")
+
         # Sends a request to get the parameter values of the GPTRequest node.
         # And then put all the parameters at the beginning of the log file.
         gpt_params = self.send_get_gpt_request_params_request()
         gpt_params_string = f"ChatGPT persona: {gpt_params.chatgpt_persona} \n" 
         gpt_params_string += f"Temperature: {gpt_params.temperature}\n"
-        gpt_params_string += f"Maximum Window of last messages: {gpt_params.max_window_messages}\n ---"
+        gpt_params_string += f"Maximum Window of last messages: {gpt_params.max_window_messages}\n---"
         self.conversation_logger.info(gpt_params_string)
 
         max_conversation_length = self.get_parameter("max_conversation_length").get_parameter_value().integer_value
-        self.conversation_logger.info(f"Maximum conversation length: {max_conversation_length}\n ---")
+        self.conversation_logger.info(f"Maximum conversation length: {max_conversation_length}\n---")
 
         # Sets the voice alteration to False.
         self.send_change_voice_alteration_request(False)
@@ -231,9 +277,12 @@ class Interaction(Node):
         gpt_response = self.send_gpt_request()
         end = time.time()
         self.gpt_response_times.append(end - start)
-        
+
         # Logging the response
         self.conversation_logger.info(f"Robot: {gpt_response.chatgpt_response}")
+
+        # Positioning the antennae both pointed towards the middle when the robot is speaking
+        self.send_motors_movement_request([self.RIGHT_ANTENNA, self.LEFT_ANTENNA], [100, 80])
 
         tts_response = self.send_speak_request(gpt_response.chatgpt_response)
         self.tts_processing_times.append(tts_response.processing_time)
@@ -243,14 +292,24 @@ class Interaction(Node):
 
         while max_conversation_length == self.INFINITE_CONVERSATION or conversation_length < max_conversation_length:
 
+            # Positioning the antennae both upwards when the robot is listening
+            self.send_motors_movement_request([self.RIGHT_ANTENNA, self.LEFT_ANTENNA], [70, 110])
+
             # Perform an emotion to let the user know that the robot is listening
             self.send_display_emotion_request("happy")
 
+            # Trying to listen to user speech input
+            self.send_listen_request()
+            
+            # Positioning the antennae bot to the left while the robot is thinking
+            self.send_motors_movement_request([self.RIGHT_ANTENNA, self.LEFT_ANTENNA], [60, 70])
+
+            # Perform an emotion to let the user know that the robot stopped listening
+            self.send_display_emotion_request("surprise")
+
             # Trying to recognize user speech input
             speech_response = self.send_recognize_speech_request()
-            # Perform an emotion to let the user know that the robot processed the speech
-            self.send_display_emotion_request("surprise")
-            
+
             # If successfully recognized speech input --> Send a request to ChatGPT
             # and use TTS for ChatGPTs response
             if speech_response.success:
@@ -261,11 +320,15 @@ class Interaction(Node):
                 start = time.time()
                 gpt_response = self.send_gpt_request(speech_response.recognized_speech)
                 end = time.time()
+
                 self.gpt_response_times.append(end - start)
-                self.conversation_logger.info(f"ChatGPT response time: {end - start}s")
+                self.conversation_logger.info(f"Robot response time: {end - start}s")
 
                 # Logging ChatGPTs response
                 self.conversation_logger.info(f"Robot: {gpt_response.chatgpt_response}")
+
+                # Positioning the antennae both pointed towards the middle when the robot is speaking
+                self.send_motors_movement_request([self.RIGHT_ANTENNA, self.LEFT_ANTENNA], [100, 80])
 
                 tts_response = self.send_speak_request(gpt_response.chatgpt_response)
                 self.tts_processing_times.append(tts_response.processing_time)
@@ -273,6 +336,8 @@ class Interaction(Node):
                 # Increment the back and forth messages counter
                 conversation_length += 1
             else:
+                self.send_motors_movement_request([self.RIGHT_ANTENNA, self.LEFT_ANTENNA], [10, 170])
+                self.send_display_emotion_request("sad")
                 error_message = "Sorry, I did not understand you. Can you please repeat what you said?"
                 
                 # Adds the error_message to the message history
@@ -289,7 +354,7 @@ def main():
     rclpy.init()
 
     interaction_node = Interaction()
-
+    
     interaction_node.interaction()
 
     interaction_node.destroy_node()
