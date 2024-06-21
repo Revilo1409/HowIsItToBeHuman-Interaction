@@ -1,4 +1,0 @@
----
-string chatgpt_persona
-float64 temperature
-int64 max_window_messages
